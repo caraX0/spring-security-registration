@@ -89,7 +89,7 @@ public class Role {
             return false;
         }
         final Role role = (Role) obj;
-        if (!role.equals(role.name)) {
+        if (!name.equals(role.name)) {
             return false;
         }
         return true;
