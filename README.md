@@ -1,7 +1,3 @@
-**UPDATE**: The price of "Learn Spring Security OAuth" will permanently change on the 11th of December, along with the upcoming OAuth2 material: http://bit.ly/github-lsso
-
-=========
-
 ## Login and Registration Example Project with Spring Security
 If you're already a student of Learn Spring Security, you can get started diving deeper into registration with Module 2 </br>
 If you're not yet a student, you can get access to the course here: http://bit.ly/github-lsso
