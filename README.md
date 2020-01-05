@@ -28,6 +28,7 @@ If you're not yet a student, you can get access to the course here: http://bit.l
 - [Notify User of Login From New Device or Location](https://www.baeldung.com/spring-security-login-new-device-location)
 - [Preventing Username Enumeration Attacks with Spring Security](https://www.baeldung.com/spring-security-enumeration-attacks)
 
+
 ### Build and Deploy the Project
 ```
 mvn clean install
@@ -35,6 +36,9 @@ mvn clean install
 
 This is a Spring Boot project, so you can deploy it by simply using the main class: `Application.java`
 
+Once deployed, you can simply access the app at: 
+
+http://localhost:8081
 
 
 ### Set up MySQL
