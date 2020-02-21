@@ -97,7 +97,7 @@ public class RegistrationControllerIntegrationTest {
 
         ResultActions resultActions = this.mockMvc.perform(post("/user/registration").params(param));
         resultActions.andExpect(status().is(400));
-        resultActions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)).andExpect(jsonPath("$.error", is("InvaliduserDto")))
+        resultActions.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.error", is("InvaliduserDto")))
                 .andExpect(jsonPath("$.message", containsString("{\"field\":\"lastName\",\"defaultMessage\":\"Length must be greater than 1\"}")));
     }
 }
