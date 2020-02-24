@@ -77,6 +77,8 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable()
             .authorizeRequests()
+        // Uncomment this if you want to use the H2 console
+        //      .antMatchers("/h2/**").permitAll()
                 .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin",
                         "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*",
                         "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*",
@@ -107,6 +109,11 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
              .and()
                 .rememberMe().rememberMeServices(rememberMeServices()).key("theKey");
+        // Uncomment this if you want to use the H2 console
+        //   .and()
+        //      .headers().frameOptions().disable();
+
+
     // @formatter:on
     }
 
