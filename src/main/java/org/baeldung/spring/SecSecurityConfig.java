@@ -77,8 +77,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable()
             .authorizeRequests()
-        // Uncomment this if you want to use the H2 console
-        //      .antMatchers("/h2/**").permitAll()
+                .antMatchers("/h2/**").permitAll() // to enable access to H2 db's console
                 .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin",
                         "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*",
                         "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*",
@@ -108,10 +107,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
              .and()
-                .rememberMe().rememberMeServices(rememberMeServices()).key("theKey");
-        // Uncomment this if you want to use the H2 console
-        //   .and()
-        //      .headers().frameOptions().disable();
+                .rememberMe().rememberMeServices(rememberMeServices()).key("theKey")
+             .and()
+                .headers().frameOptions().disable(); // this is needed to access the H2 db's console
 
 
     // @formatter:on
