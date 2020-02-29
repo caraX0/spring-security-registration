@@ -35,12 +35,14 @@ mvn clean install
 
 This is a Spring Boot project, so you can deploy it by simply using the main class: `Application.java`
 
-Once deployed, you can simply access the app at: 
+Once deployed, you can access the app at: 
 
 https://localhost:8081
 
 
 ### Set up MySQL
+By default, the project is configured to use the embedded H2 database.
+If you want to use the MySQL instead, you need to uncomment relevant section in the [persistence.properties](src/main/resources/persistence.properties) and create the db user as shown below:
 ```
 mysql -u root -p 
 > CREATE USER 'tutorialuser'@'localhost' IDENTIFIED BY 'tutorialmy5ql';
