@@ -1,6 +1,6 @@
 ## Login and Registration Example Project with Spring Security
 If you're already a student of Learn Spring Security, you can get started diving deeper into registration with Module 2 </br>
-If you're not yet a student, you can get access to the course here: https://bit.ly/github-lsso
+If you're not yet a student, you can get access to the course here: https://bit.ly/github-lss
 </br></br></br>
 
 
