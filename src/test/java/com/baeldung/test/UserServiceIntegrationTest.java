@@ -9,7 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.baeldung.persistence.dao.RoleRepository;
 import com.baeldung.persistence.dao.UserRepository;
@@ -72,15 +74,21 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenDetachedUser_whenAccessingEntityAssociations_thenCorrect() throws EmailExistsException {
+    public void givenDetachedUser_whenAccessingEntityAssociations_thenCorrect() {
+        Role role = roleRepository.findByName("ROLE_USER");
+        if (role == null) {
+            roleRepository.saveAndFlush(new Role("ROLE_USER"));
+        }
+
+        // detached entity
         final User user = registerUser();
+
+        // only roles are eagerly fetched
         assertNotNull(user.getRoles());
-        user.getRoles().stream().filter(r -> r != null).forEach(Role::getId);
-        user.getRoles().stream().filter(r -> r != null).forEach(Role::getName);
-        user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges());
-        user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().filter(p -> p != null).forEach(Privilege::getId));
-        user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().filter(p -> p != null).forEach(Privilege::getName));
-        user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().map(Privilege::getRoles).forEach(Assert::assertNotNull));
+
+        List<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
+        assertEquals(1, roles.size());
+        assertEquals("ROLE_USER", roles.iterator().next());
     }
 
     @Test
