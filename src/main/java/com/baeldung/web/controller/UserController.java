@@ -7,8 +7,7 @@ import com.baeldung.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UserController {
@@ -19,13 +18,13 @@ public class UserController {
     @Autowired
     IUserService userService;
 
-    @RequestMapping(value = "/loggedUsers", method = RequestMethod.GET)
+    @GetMapping("/loggedUsers")
     public String getLoggedUsers(final Locale locale, final Model model) {
         model.addAttribute("users", activeUserStore.getUsers());
         return "users";
     }
 
-    @RequestMapping(value = "/loggedUsersFromSessionRegistry", method = RequestMethod.GET)
+    @GetMapping("/loggedUsersFromSessionRegistry")
     public String getLoggedUsersFromSessionRegistry(final Locale locale, final Model model) {
         model.addAttribute("users", userService.getUsersFromSessionRegistry());
         return "users";

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class RegistrationCaptchaController {
@@ -37,7 +38,7 @@ public class RegistrationCaptchaController {
 
     // Registration
 
-    @RequestMapping(value = "/user/registrationCaptcha", method = RequestMethod.POST)
+    @PostMapping("/user/registrationCaptcha")
     @ResponseBody
     public GenericResponse captchaRegisterUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
 
