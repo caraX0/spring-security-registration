@@ -35,9 +35,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-@RequestMapping(value = "/old")
+@RequestMapping("/old")
 public class OldRegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -65,7 +67,7 @@ public class OldRegistrationController {
 
     // API
 
-    @RequestMapping(value = "/user/registration", method = RequestMethod.GET)
+    @GetMapping("/user/registration")
     public String showRegistrationForm(final HttpServletRequest request, final Model model) {
         LOGGER.debug("Rendering registration page.");
         final UserDto accountDto = new UserDto();
@@ -73,7 +75,7 @@ public class OldRegistrationController {
         return "registration";
     }
 
-    @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
+    @GetMapping("/registrationConfirm")
     public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) {
         final Locale locale = request.getLocale();
 
@@ -99,7 +101,7 @@ public class OldRegistrationController {
         return "redirect:/login.html?lang=" + locale.getLanguage();
     }
 
-    @RequestMapping(value = "/user/registration", method = RequestMethod.POST)
+    @PostMapping("/user/registration")
     public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid final UserDto userDto, final HttpServletRequest request, final Errors errors) {
         LOGGER.debug("Registering user account with information: {}", userDto);
 
@@ -118,7 +120,7 @@ public class OldRegistrationController {
         return new ModelAndView("successRegister", "user", userDto);
     }
 
-    @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    @GetMapping("/user/resendRegistrationToken")
     public String resendRegistrationToken(final HttpServletRequest request, final Model model, @RequestParam("token") final String existingToken) {
         final Locale locale = request.getLocale();
         final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
@@ -139,7 +141,7 @@ public class OldRegistrationController {
         return "redirect:/login.html?lang=" + locale.getLanguage();
     }
 
-    @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
+    @PostMapping("/user/resetPassword")
     public String resetPassword(final HttpServletRequest request, final Model model, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
         if (user == null) {
@@ -165,7 +167,7 @@ public class OldRegistrationController {
         return "redirect:/login.html?lang=" + request.getLocale().getLanguage();
     }
 
-    @RequestMapping(value = "/user/changePassword", method = RequestMethod.GET)
+    @GetMapping("/user/changePassword")
     public String changePassword(final HttpServletRequest request, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
         final Locale locale = request.getLocale();
 
@@ -189,7 +191,7 @@ public class OldRegistrationController {
         return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
     }
 
-    @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
+    @PostMapping("/user/savePassword")
     @PreAuthorize("hasRole('READ_PRIVILEGE')")
     public String savePassword(final HttpServletRequest request, final Model model, @RequestParam("password") final String password) {
         final Locale locale = request.getLocale();
