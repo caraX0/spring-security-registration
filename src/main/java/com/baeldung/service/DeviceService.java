@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -141,22 +142,35 @@ public class DeviceService {
         notification.setTo(email);
         notification.setSubject(subject);
 
-        String text = messages
-                .getMessage("message.login.notification.deviceDetails", null, locale) +
+        String text = getMessage("message.login.notification.deviceDetails", locale) +
                 " " + deviceDetails +
                 "\n" +
-                messages
-                        .getMessage("message.login.notification.location", null, locale) +
+                    getMessage("message.login.notification.location", locale) +
                 " " + location +
                 "\n" +
-                messages
-                        .getMessage("message.login.notification.ip", null, locale) +
+                    getMessage("message.login.notification.ip", locale) +
                 " " + ip;
 
         notification.setText(text);
         notification.setFrom(from);
 
         mailSender.send(notification);
+    }
+
+    /**
+     * Get the message with a provided locale. If not found, try default {@link Locale#ENGLISH}.
+     *
+     * @param code   Message code
+     * @param locale Request's locale
+     * @return Retrieved message
+     */
+    private String getMessage(String code, Locale locale) {
+        try {
+            return messages.getMessage(code, null, locale);
+
+        } catch (NoSuchMessageException ex) {
+            return messages.getMessage(code, null, Locale.ENGLISH);
+        }
     }
 
 }
