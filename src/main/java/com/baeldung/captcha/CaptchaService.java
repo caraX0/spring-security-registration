@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
 
 @Service("captchaService")
 public class CaptchaService implements ICaptchaService {
+    
+    private static final String RECAPTCHA_URL_TEMPLATE = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(CaptchaService.class);
 
     @Autowired
@@ -31,20 +34,14 @@ public class CaptchaService implements ICaptchaService {
     private RestOperations restTemplate;
 
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
+    
+    private static final float RECAPTCHA_THRESHOLD = 0.5f;
 
     @Override
     public void processResponse(final String response) {
-        LOGGER.debug("Attempting to validate response {}", response);
+        securityCheck(response);
 
-        if (reCaptchaAttemptService.isBlocked(getClientIP())) {
-            throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
-        }
-
-        if (!responseSanityCheck(response)) {
-            throw new ReCaptchaInvalidException("Response contains invalid characters");
-        }
-
-        final URI verifyUri = URI.create(String.format("https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s", getReCaptchaSecret(), response, getClientIP()));
+        final URI verifyUri = URI.create(String.format(RECAPTCHA_URL_TEMPLATE, getReCaptchaSecret(), response, getClientIP()));
         try {
             final GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
             LOGGER.debug("Google's response: {} ", googleResponse.toString());
@@ -61,6 +58,42 @@ public class CaptchaService implements ICaptchaService {
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
     }
 
+
+
+    private void securityCheck(final String response) {
+        LOGGER.debug("Attempting to validate response {}", response);
+
+        if (reCaptchaAttemptService.isBlocked(getClientIP())) {
+            throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
+        }
+
+        if (!responseSanityCheck(response)) {
+            throw new ReCaptchaInvalidException("Response contains invalid characters");
+        }
+    }
+
+    @Override
+    public void processResponseV3(String response, String action) throws ReCaptchaInvalidException {
+        securityCheck(response);
+        
+        final URI verifyUri = URI.create(String.format(RECAPTCHA_URL_TEMPLATE, getReCaptchaSecretV3(), response, getClientIP()));
+        try {
+            final GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
+            LOGGER.debug("Google's response: {} ", googleResponse.toString());
+
+            if (!googleResponse.isSuccess() || !googleResponse.getAction().equals(action) || googleResponse.getScore() < RECAPTCHA_THRESHOLD) {
+                if (googleResponse.hasClientError()) {
+                    reCaptchaAttemptService.reCaptchaFailed(getClientIP());
+                }
+                throw new ReCaptchaInvalidException("reCaptcha was not successfully validated");
+            }
+        } catch (RestClientException rce) {
+            throw new ReCaptchaUnavailableException("Registration unavailable at this time.  Please try again later.", rce);
+        }
+        reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
+    }
+
+    
     private boolean responseSanityCheck(final String response) {
         return StringUtils.hasLength(response) && RESPONSE_PATTERN.matcher(response).matches();
     }
@@ -73,6 +106,21 @@ public class CaptchaService implements ICaptchaService {
     @Override
     public String getReCaptchaSecret() {
         return captchaSettings.getSecret();
+    }
+
+    @Override
+    public String getReCaptchaSiteV3() {
+        return captchaSettings.getSiteV3();
+    }
+
+    @Override
+    public String getReCaptchaSecretV3() {
+        return captchaSettings.getSecretV3();
+    }
+    
+    @Override
+    public String getRegisterAction() {
+        return "register";
     }
 
     private String getClientIP() {
