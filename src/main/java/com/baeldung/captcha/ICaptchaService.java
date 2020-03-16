@@ -4,12 +4,14 @@ import com.baeldung.web.error.ReCaptchaInvalidException;
 
 public interface ICaptchaService {
     void processResponse(final String response) throws ReCaptchaInvalidException;
-    
-    void processResponseV3(final String response, final String action) throws ReCaptchaInvalidException;
 
     String getReCaptchaSite();
 
     String getReCaptchaSecret();
+    
+
+    //reCAPTCHA V3
+    void processResponseV3(final String response, final String action) throws ReCaptchaInvalidException;
     
     String getReCaptchaSiteV3();
 

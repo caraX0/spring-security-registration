@@ -42,6 +42,10 @@ public class RegistrationCaptchaController {
         final String response = request.getParameter("g-recaptcha-response");
         captchaService.processResponse(response);
 
+        return registerNewUserHandler(accountDto, request);
+    }
+
+    private GenericResponse registerNewUserHandler(final UserDto accountDto, final HttpServletRequest request) {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
         final User registered = userService.registerNewUserAccount(accountDto);
@@ -57,11 +61,7 @@ public class RegistrationCaptchaController {
         final String response = request.getParameter("response");
         captchaService.processResponseV3(response, captchaService.getRegisterAction());
 
-        LOGGER.debug("Registering user account with information: {}", accountDto);
-
-        final User registered = userService.registerNewUserAccount(accountDto);
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
-        return new GenericResponse("success");
+        return registerNewUserHandler(accountDto, request);
     }
     
 

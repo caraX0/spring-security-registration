@@ -102,7 +102,7 @@ function register(event){
     
     if (typeof grecaptcha !== 'undefined') {
     	var siteKey = /*[[${@captchaService.getReCaptchaSiteV3()}]]*/;
-    	grecaptcha.execute(siteKey, {action: 'register'}).then(function(response) {
+    	grecaptcha.execute(siteKey, {action: /*[[${@captchaService.getRegisterAction()}]]*/}).then(function(response) {
 			$('#response').val(response);    
     		var formData= $('form').serialize();
         	
@@ -113,28 +113,22 @@ function register(event){
                 
             })
             .fail(function(data) {
+            	
                 if(data.responseJSON.error.indexOf("MailError") > -1)
                 {
                     window.location.href = serverContext + "emailError.html";
                 }
-                else if(data.error == "InvalidReCaptcha"){
+                else if(data.responseJSON.error == "InvalidReCaptcha"){
                     $("#captchaError").show().html(data.responseJSON.message);
                 }
-                else if(data.error == "UserAlreadyExist"){
+                else if(data.responseJSON.error == "UserAlreadyExist"){
                     $("#emailError").show().html(data.responseJSON.message);
                 }
-                else if(data.error.indexOf("InternalError") > -1){
+                else if(data.responseJSON.error.indexOf("InternalError") > -1){
                     window.location.href = serverContext + "login?message=" + data.responseJSON.message;
                 }
                 else{
-                	var errors = $.parseJSON(data.message);
-                    $.each( errors, function( index,item ){
-                        $("#"+item.field+"Error").show().html(item.defaultMessage);
-                    });
-                    errors = $.parseJSON(data.error);
-                    $.each( errors, function( index,item ){
-                        $("#globalError").show().append(item.defaultMessage+"<br/>");
-                    });
+                	$("#globalError").show().append(data.responseJSON.message+"<br/>");   
                 }
             });
         });
