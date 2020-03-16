@@ -35,8 +35,6 @@ public class CaptchaService implements ICaptchaService {
 
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
     
-    private static final float RECAPTCHA_THRESHOLD = 0.5f;
-
     @Override
     public void processResponse(final String response) {
         securityCheck(response);
@@ -57,20 +55,7 @@ public class CaptchaService implements ICaptchaService {
         }
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
     }
-
-
-
-    private void securityCheck(final String response) {
-        LOGGER.debug("Attempting to validate response {}", response);
-
-        if (reCaptchaAttemptService.isBlocked(getClientIP())) {
-            throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
-        }
-
-        if (!responseSanityCheck(response)) {
-            throw new ReCaptchaInvalidException("Response contains invalid characters");
-        }
-    }
+    
 
     @Override
     public void processResponseV3(String response, String action) throws ReCaptchaInvalidException {
@@ -81,7 +66,7 @@ public class CaptchaService implements ICaptchaService {
             final GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
             LOGGER.debug("Google's response: {} ", googleResponse.toString());
 
-            if (!googleResponse.isSuccess() || !googleResponse.getAction().equals(action) || googleResponse.getScore() < RECAPTCHA_THRESHOLD) {
+            if (!googleResponse.isSuccess() || !googleResponse.getAction().equals(action) || googleResponse.getScore() < captchaSettings.getThreshold()) {
                 if (googleResponse.hasClientError()) {
                     reCaptchaAttemptService.reCaptchaFailed(getClientIP());
                 }
@@ -91,6 +76,18 @@ public class CaptchaService implements ICaptchaService {
             throw new ReCaptchaUnavailableException("Registration unavailable at this time.  Please try again later.", rce);
         }
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
+    }
+    
+    private void securityCheck(final String response) {
+        LOGGER.debug("Attempting to validate response {}", response);
+
+        if (reCaptchaAttemptService.isBlocked(getClientIP())) {
+            throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
+        }
+
+        if (!responseSanityCheck(response)) {
+            throw new ReCaptchaInvalidException("Response contains invalid characters");
+        }
     }
 
     
