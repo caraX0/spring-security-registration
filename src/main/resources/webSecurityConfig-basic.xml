@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/security 
         http://www.springframework.org/schema/security/spring-security.xsd
         http://www.springframework.org/schema/beans 
-        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd"
+        http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
 	<http use-expressions="true">
@@ -31,11 +31,11 @@
 	</http>
 
 	<beans:bean id="myAuthenticationSuccessHandler"
-		class="org.baeldung.security.MySimpleUrlAuthenticationSuccessHandler" />
+		class="com.baeldung.security.MySimpleUrlAuthenticationSuccessHandler" />
 
 	<authentication-manager>
 		<authentication-provider user-service-ref="userDetailsService" />
 	</authentication-manager>
-	<beans:bean id="userDetailsService" class="org.baeldung.security.MyUserDetailsService" />
+	<beans:bean id="userDetailsService" class="com.baeldung.security.MyUserDetailsService" />
 
 </beans:beans>

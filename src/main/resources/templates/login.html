@@ -4,8 +4,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
 <title th:text="#{label.pages.home.title}">Title</title>
 <script th:inline="javascript">
-/*<![CDATA[*/
-    function validate() {
+	function validate() {
         if (document.f.username.value == "" && document.f.password.value == "") {
             alert(/*[[#{message.username} + #{message.password}]]*/);
             document.f.username.focus();
@@ -22,7 +21,7 @@
             return false;
         }
     }
-/*]]>*/ 
+    
 </script>
 <style type="text/css">
 .wrapper{width:500px;margin-left:auto;margin-right:auto}
@@ -43,7 +42,9 @@ label{padding-left:0 !important}
             <br/><br/>
             
             <form name='f' action="login" method='POST' onsubmit="return validate();">
-                
+                 <span id="welcometext">&nbsp;</span>
+                 
+                 <br /><br />
                  <label class="col-sm-4" th:text="#{label.form.loginEmail}">Email</label>
                  <span class="col-sm-8"><input class="form-control" type='text' name='username' value=''/></span>
                 
