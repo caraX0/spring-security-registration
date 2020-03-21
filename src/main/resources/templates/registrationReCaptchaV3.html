@@ -9,7 +9,7 @@ color:#000;
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script th:src="@{/resources/pwstrength.js}"></script>
-<script th:src='|https://www.google.com/recaptcha/api.js?render=${@captchaService.getReCaptchaSiteV3()}'></script>
+<script th:src='|https://www.google.com/recaptcha/api.js?render=${@captchaServiceV3.getReCaptchaSite()}'></script>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"/>
 <title th:text="#{label.form.title}">form</title>
 </head>
@@ -101,8 +101,8 @@ function register(event){
     }
     
     if (typeof grecaptcha !== 'undefined') {
-    	var siteKey = /*[[${@captchaService.getReCaptchaSiteV3()}]]*/;
-    	grecaptcha.execute(siteKey, {action: /*[[${@captchaService.getRegisterAction()}]]*/}).then(function(response) {
+    	var siteKey = /*[[${@captchaServiceV3.getReCaptchaSite()}]]*/;
+    	grecaptcha.execute(siteKey, {action: /*[[${T(com.baeldung.captcha.CaptchaServiceV3).REGISTER_ACTION}]]*/}).then(function(response) {
 			$('#response').val(response);    
     		var formData= $('form').serialize();
         	

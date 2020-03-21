@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baeldung.captcha.CaptchaServiceV3;
 import com.baeldung.captcha.ICaptchaService;
 import com.baeldung.persistence.model.User;
 import com.baeldung.registration.OnRegistrationCompleteEvent;
@@ -27,6 +28,9 @@ public class RegistrationCaptchaController {
 
     @Autowired
     private ICaptchaService captchaService;
+    
+    @Autowired
+    private ICaptchaService captchaServiceV3;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -45,13 +49,6 @@ public class RegistrationCaptchaController {
         return registerNewUserHandler(accountDto, request);
     }
 
-    private GenericResponse registerNewUserHandler(final UserDto accountDto, final HttpServletRequest request) {
-        LOGGER.debug("Registering user account with information: {}", accountDto);
-
-        final User registered = userService.registerNewUserAccount(accountDto);
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
-        return new GenericResponse("success");
-    }
     
     // Registration reCaptchaV3
     @PostMapping("/user/registrationCaptchaV3")
@@ -59,9 +56,17 @@ public class RegistrationCaptchaController {
     public GenericResponse captchaV3RegisterUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
 
         final String response = request.getParameter("response");
-        captchaService.processResponseV3(response, captchaService.getRegisterAction());
+        captchaServiceV3.processResponse(response, CaptchaServiceV3.REGISTER_ACTION);
 
         return registerNewUserHandler(accountDto, request);
+    }
+    
+    private GenericResponse registerNewUserHandler(final UserDto accountDto, final HttpServletRequest request) {
+        LOGGER.debug("Registering user account with information: {}", accountDto);
+
+        final User registered = userService.registerNewUserAccount(accountDto);
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+        return new GenericResponse("success");
     }
     
 
