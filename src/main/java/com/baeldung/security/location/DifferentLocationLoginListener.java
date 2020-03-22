@@ -1,4 +1,4 @@
-package org.baeldung.security.location;
+package com.baeldung.security.location;
 
 import java.util.Date;
 

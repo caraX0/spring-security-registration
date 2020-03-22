@@ -1,10 +1,11 @@
-package org.baeldung.security.location;
+package com.baeldung.security.location;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.baeldung.persistence.model.NewLocationToken;
-import org.baeldung.service.IUserService;
-import org.baeldung.web.error.UnusualLocationException;
+import com.baeldung.persistence.model.NewLocationToken;
+import com.baeldung.service.IUserService;
+import com.baeldung.web.error.UnusualLocationException;
+import com.baeldung.security.location.OnDifferentLocationLoginEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;

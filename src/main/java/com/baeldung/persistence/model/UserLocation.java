@@ -1,4 +1,4 @@
-package org.baeldung.persistence.model;
+package com.baeldung.persistence.model;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

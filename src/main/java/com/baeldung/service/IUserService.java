@@ -9,12 +9,7 @@ import com.baeldung.web.error.UserAlreadyExistException;
 import com.baeldung.persistence.model.PasswordResetToken;
 import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.VerificationToken;
-import org.baeldung.persistence.model.NewLocationToken;
-import org.baeldung.persistence.model.PasswordResetToken;
-import org.baeldung.persistence.model.User;
-import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.web.dto.UserDto;
-import org.baeldung.web.error.UserAlreadyExistException;
+import com.baeldung.persistence.model.NewLocationToken;
 
 public interface IUserService {
 

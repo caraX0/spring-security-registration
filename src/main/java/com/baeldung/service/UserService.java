@@ -12,18 +12,18 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.baeldung.persistence.dao.NewLocationTokenRepository;
+import com.baeldung.persistence.dao.NewLocationTokenRepository;
 import com.baeldung.persistence.dao.PasswordResetTokenRepository;
 import com.baeldung.persistence.dao.RoleRepository;
-import org.baeldung.persistence.dao.UserLocationRepository;
+import com.baeldung.persistence.dao.UserLocationRepository;
 import com.baeldung.persistence.dao.UserRepository;
 import com.baeldung.web.dto.UserDto;
 import com.baeldung.web.error.UserAlreadyExistException;
 import com.baeldung.persistence.dao.VerificationTokenRepository;
-import org.baeldung.persistence.model.NewLocationToken;
+import com.baeldung.persistence.model.NewLocationToken;
 import com.baeldung.persistence.model.PasswordResetToken;
 import com.baeldung.persistence.model.User;
-import org.baeldung.persistence.model.UserLocation;
+import com.baeldung.persistence.model.UserLocation;
 import com.baeldung.persistence.model.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -248,7 +248,7 @@ public class UserService implements IUserService {
                 .getCountry()
                 .getName();
             System.out.println(country + "====****");
-            final User user = repository.findByEmail(username);
+            final User user = userRepository.findByEmail(username);
             final UserLocation loc = userLocationRepository.findByCountryAndUser(country, user);
             if ((loc == null) || !loc.isEnabled()) {
                 return createNewLocationToken(country, user);

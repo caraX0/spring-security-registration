@@ -1,7 +1,7 @@
-package org.baeldung.persistence.dao;
+package com.baeldung.persistence.dao;
 
-import org.baeldung.persistence.model.User;
-import org.baeldung.persistence.model.UserLocation;
+import com.baeldung.persistence.model.User;
+import com.baeldung.persistence.model.UserLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserLocationRepository extends JpaRepository<UserLocation, Long> {

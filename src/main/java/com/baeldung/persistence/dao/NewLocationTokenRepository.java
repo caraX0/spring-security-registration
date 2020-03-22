@@ -1,7 +1,7 @@
-package org.baeldung.persistence.dao;
+package com.baeldung.persistence.dao;
 
-import org.baeldung.persistence.model.NewLocationToken;
-import org.baeldung.persistence.model.User;
+import com.baeldung.persistence.model.NewLocationToken;
+import com.baeldung.persistence.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NewLocationTokenRepository extends JpaRepository<NewLocationToken, Long> {

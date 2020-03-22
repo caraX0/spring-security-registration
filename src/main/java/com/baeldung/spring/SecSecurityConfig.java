@@ -7,7 +7,7 @@ import com.baeldung.persistence.dao.UserRepository;
 import com.baeldung.security.CustomRememberMeServices;
 import com.baeldung.security.google2fa.CustomAuthenticationProvider;
 import com.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
-import org.baeldung.security.location.DifferentLocationChecker;
+import com.baeldung.security.location.DifferentLocationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

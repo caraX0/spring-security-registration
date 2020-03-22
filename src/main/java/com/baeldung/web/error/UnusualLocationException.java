@@ -1,4 +1,4 @@
-package org.baeldung.web.error;
+package com.baeldung.web.error;
 
 import org.springframework.security.core.AuthenticationException;
 

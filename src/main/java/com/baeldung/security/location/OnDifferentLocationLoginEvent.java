@@ -1,8 +1,8 @@
-package org.baeldung.security.location;
+package com.baeldung.security.location;
 
 import java.util.Locale;
 
-import org.baeldung.persistence.model.NewLocationToken;
+import com.baeldung.persistence.model.NewLocationToken;
 import org.springframework.context.ApplicationEvent;
 
 @SuppressWarnings("serial")
