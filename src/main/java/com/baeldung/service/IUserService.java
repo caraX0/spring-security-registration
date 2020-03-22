@@ -9,6 +9,7 @@ import com.baeldung.web.error.UserAlreadyExistException;
 import com.baeldung.persistence.model.PasswordResetToken;
 import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.VerificationToken;
+import com.baeldung.persistence.model.NewLocationToken;
 
 public interface IUserService {
 
@@ -48,4 +49,9 @@ public interface IUserService {
 
     List<String> getUsersFromSessionRegistry();
 
+    NewLocationToken isNewLoginLocation(String username, String ip);
+
+    String isValidNewLocationToken(String token);
+
+    void addUserLocation(User user, String ip);
 }
