@@ -37,14 +37,4 @@ public class CaptchaServiceV3 extends AbstractCaptchaService {
         }
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
     } 
-
-    @Override
-    public String getReCaptchaSite() {
-        return captchaSettings.getSiteV3();
-    }
-
-    @Override
-    public String getReCaptchaSecret() {
-        return captchaSettings.getSecretV3();
-    }
 }

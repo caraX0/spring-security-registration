@@ -33,10 +33,14 @@ public abstract class AbstractCaptchaService implements ICaptchaService{
     protected static final String RECAPTCHA_URL_TEMPLATE = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s";
     
     @Override
-    public abstract String getReCaptchaSite();
+    public String getReCaptchaSite() {
+        return captchaSettings.getSite();
+    }
 
     @Override
-    public abstract String getReCaptchaSecret();
+    public String getReCaptchaSecret() {
+        return captchaSettings.getSecret();
+    }
   
 
     protected void securityCheck(final String response) {

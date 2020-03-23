@@ -35,14 +35,4 @@ public class CaptchaService extends AbstractCaptchaService {
         }
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
     }
-    
-    @Override
-    public String getReCaptchaSite() {
-        return captchaSettings.getSite();
-    }
-
-    @Override
-    public String getReCaptchaSecret() {
-        return captchaSettings.getSecret();
-    }
 }
