@@ -42,7 +42,7 @@ https://localhost:8081
 
 ### Set up MySQL
 By default, the project is configured to use the embedded H2 database.
-If you want to use the MySQL instead, you need to uncomment relevant section in the [persistence.properties](src/main/resources/persistence.properties) and create the db user as shown below:
+If you want to use the MySQL instead, you need to uncomment relevant section in the [application.properties](src/main/resources/application.properties) and create the db user as shown below:
 ```
 mysql -u root -p 
 > CREATE USER 'tutorialuser'@'localhost' IDENTIFIED BY 'tutorialmy5ql';

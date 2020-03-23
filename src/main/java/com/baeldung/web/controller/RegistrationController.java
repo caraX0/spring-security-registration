@@ -35,11 +35,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Controller
+@RestController
 public class RegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -71,12 +73,10 @@ public class RegistrationController {
     // Registration
 
     @PostMapping("/user/registration")
-    @ResponseBody
     public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
         final User registered = userService.registerNewUserAccount(accountDto);
-        userService.addUserLocation(registered, getClientIP(request));
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");
     }
@@ -105,7 +105,6 @@ public class RegistrationController {
     // user activation - verification
 
     @GetMapping("/user/resendRegistrationToken")
-    @ResponseBody
     public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
         final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
         final User user = userService.getUser(newToken.getToken());
@@ -115,7 +114,6 @@ public class RegistrationController {
 
     // Reset password
     @PostMapping("/user/resetPassword")
-    @ResponseBody
     public GenericResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
         if (user != null) {
@@ -137,7 +135,6 @@ public class RegistrationController {
     }
 
     @PostMapping("/user/savePassword")
-    @ResponseBody
     public GenericResponse savePassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.changeUserPassword(user, passwordDto.getNewPassword());
@@ -146,7 +143,6 @@ public class RegistrationController {
 
     // change user password
     @PostMapping("/user/updatePassword")
-    @ResponseBody
     public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
@@ -157,24 +153,12 @@ public class RegistrationController {
     }
 
     @PostMapping("/user/update/2fa")
-    @ResponseBody
     public GenericResponse modifyUser2FA(@RequestParam("use2FA") final boolean use2FA) throws UnsupportedEncodingException {
         final User user = userService.updateUser2FA(use2FA);
         if (use2FA) {
             return new GenericResponse(userService.generateQRUrl(user));
         }
         return null;
-    }
-
-    @RequestMapping(value = "/user/enableNewLoc", method = RequestMethod.GET)
-    public String enableNewLoc(Locale locale, Model model, @RequestParam("token") String token) {
-        final String loc = userService.isValidNewLocationToken(token);
-        if (loc != null) {
-            model.addAttribute("message", messages.getMessage("message.newLoc.enabled", new Object[] { loc }, locale));
-        } else {
-            model.addAttribute("message", messages.getMessage("message.error", null, locale));
-        }
-        return "redirect:/login?lang=" + locale.getLanguage();
     }
 
     // ============== NON-API ============
@@ -202,14 +186,6 @@ public class RegistrationController {
 
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    }
-
-    private final String getClientIP(HttpServletRequest request) {
-        final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
     }
 
     public void authWithHttpServletRequest(HttpServletRequest request, String username, String password) {
