@@ -1,12 +1,18 @@
 package com.baeldung.web.controller;
 
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import com.baeldung.persistence.model.PasswordResetToken;
 import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.VerificationToken;
 import com.baeldung.registration.OnRegistrationCompleteEvent;
 import com.baeldung.service.IUserService;
 import com.baeldung.web.dto.UserDto;
-import com.baeldung.web.error.UserAlreadyExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +30,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping("/old")
@@ -104,16 +105,15 @@ public class OldRegistrationController {
     public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid final UserDto userDto, final HttpServletRequest request, final Errors errors) {
         LOGGER.debug("Registering user account with information: {}", userDto);
 
+        final User registered = userService.registerNewUserAccount(userDto);
+        if (registered == null) {
+            // result.rejectValue("email", "message.regError");
+            return new ModelAndView("registration", "user", userDto);
+        }
         try {
-            final User registered = userService.registerNewUserAccount(userDto);
-
             final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), appUrl));
-        } catch (final UserAlreadyExistException uaeEx) {
-            ModelAndView mav = new ModelAndView("registration", "user", userDto);
-            String errMessage = messages.getMessage("message.regError", null, request.getLocale());
-            mav.addObject("message", errMessage);
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             LOGGER.warn("Unable to register user", ex);
             return new ModelAndView("emailError", "user", userDto);
         }
