@@ -104,14 +104,16 @@ public class OldRegistrationController {
     public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid final UserDto userDto, final HttpServletRequest request, final Errors errors) {
         LOGGER.debug("Registering user account with information: {}", userDto);
 
-        final User registered = createUserAccount(userDto);
-        if (registered == null) {
-            return new ModelAndView("registration", "user", userDto);
-        }
         try {
+            final User registered = userService.registerNewUserAccount(userDto);
+
             final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), appUrl));
-        } catch (final Exception ex) {
+        } catch (final UserAlreadyExistException uaeEx) {
+            ModelAndView mav = new ModelAndView("registration", "user", userDto);
+            String errMessage = messages.getMessage("message.regError", null, request.getLocale());
+            mav.addObject("message", errMessage);
+        } catch (final RuntimeException ex) {
             LOGGER.warn("Unable to register user", ex);
             return new ModelAndView("emailError", "user", userDto);
         }
@@ -222,15 +224,5 @@ public class OldRegistrationController {
         email.setText(message + " \r\n" + url);
         email.setFrom(env.getProperty("support.email"));
         return email;
-    }
-
-    private User createUserAccount(UserDto userDto) {
-        User registered = null;
-        try {
-            registered = userService.registerNewUserAccount(userDto);
-        } catch (UserAlreadyExistException e) {
-            return null;
-        }
-        return registered;
     }
 }
