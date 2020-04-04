@@ -113,6 +113,7 @@ public class OldRegistrationController {
             ModelAndView mav = new ModelAndView("registration", "user", userDto);
             String errMessage = messages.getMessage("message.regError", null, request.getLocale());
             mav.addObject("message", errMessage);
+            return mav;
         } catch (final RuntimeException ex) {
             LOGGER.warn("Unable to register user", ex);
             return new ModelAndView("emailError", "user", userDto);
