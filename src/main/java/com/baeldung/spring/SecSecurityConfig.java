@@ -154,7 +154,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
-        final File resource = new File("src/main/resources/GeoLite2-Country.mmdb");
+        final File resource = new File("src/main/resources/maxmind/GeoLite2-Country.mmdb");
         return new DatabaseReader.Builder(resource).build();
     }
 
