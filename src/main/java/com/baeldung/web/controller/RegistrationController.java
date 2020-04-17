@@ -28,6 +28,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -145,6 +146,7 @@ public class RegistrationController {
 
     // change user password
     @PostMapping("/user/updatePassword")
+    @PreAuthorize("hasRole('READ_PRIVILEGE')")
     public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
