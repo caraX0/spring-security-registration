@@ -28,6 +28,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,6 +41,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegistrationController {
@@ -77,6 +79,7 @@ public class RegistrationController {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
         final User registered = userService.registerNewUserAccount(accountDto);
+        userService.addUserLocation(registered, getClientIP(request));
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");
     }
@@ -143,6 +146,7 @@ public class RegistrationController {
 
     // change user password
     @PostMapping("/user/updatePassword")
+    @PreAuthorize("hasRole('READ_PRIVILEGE')")
     public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
@@ -159,6 +163,17 @@ public class RegistrationController {
             return new GenericResponse(userService.generateQRUrl(user));
         }
         return null;
+    }
+
+    @RequestMapping(value = "/user/enableNewLoc", method = RequestMethod.GET)
+    public String enableNewLoc(Locale locale, Model model, @RequestParam("token") String token) {
+        final String loc = userService.isValidNewLocationToken(token);
+        if (loc != null) {
+            model.addAttribute("message", messages.getMessage("message.newLoc.enabled", new Object[] { loc }, locale));
+        } else {
+            model.addAttribute("message", messages.getMessage("message.error", null, locale));
+        }
+        return "redirect:/login?lang=" + locale.getLanguage();
     }
 
     // ============== NON-API ============
@@ -186,6 +201,14 @@ public class RegistrationController {
 
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
+    private final String getClientIP(HttpServletRequest request) {
+        final String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 
     public void authWithHttpServletRequest(HttpServletRequest request, String username, String password) {
