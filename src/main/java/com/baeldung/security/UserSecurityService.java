@@ -1,19 +1,12 @@
 package com.baeldung.security;
 
-import java.util.Arrays;
-import java.util.Calendar;
-
-import javax.transaction.Transactional;
-
 import com.baeldung.persistence.dao.PasswordResetTokenRepository;
 import com.baeldung.persistence.model.PasswordResetToken;
-import com.baeldung.persistence.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.Calendar;
 
 @Service
 @Transactional
@@ -22,24 +15,21 @@ public class UserSecurityService implements ISecurityUserService {
     @Autowired
     private PasswordResetTokenRepository passwordTokenRepository;
 
-    // API
-
     @Override
-    public String validatePasswordResetToken(long id, String token) {
+    public String validatePasswordResetToken(String token) {
         final PasswordResetToken passToken = passwordTokenRepository.findByToken(token);
-        if ((passToken == null) || (passToken.getUser().getId() != id)) {
-            return "invalidToken";
-        }
 
-        final Calendar cal = Calendar.getInstance();
-        if ((passToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            return "expired";
-        }
-
-        final User user = passToken.getUser();
-        final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        return null;
+        return !isTokenFound(passToken) ? "invalidToken"
+                : isTokenExpired(passToken) ? "expired"
+                : null;
     }
 
+    private boolean isTokenFound(PasswordResetToken passToken) {
+        return passToken != null;
+    }
+
+    private boolean isTokenExpired(PasswordResetToken passToken) {
+        final Calendar cal = Calendar.getInstance();
+        return passToken.getExpiryDate().before(cal.getTime());
+    }
 }

@@ -32,7 +32,7 @@ public interface IUserService {
 
     PasswordResetToken getPasswordResetToken(String token);
 
-    User getUserByPasswordResetToken(String token);
+    Optional<User> getUserByPasswordResetToken(String token);
 
     Optional<User> getUserByID(long id);
 
