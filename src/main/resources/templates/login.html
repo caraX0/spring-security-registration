@@ -29,7 +29,7 @@ label{padding-left:0 !important}
 </style>
 </head>
 <body>
-<div th:if="${param.message != null}" class="alert alert-info" th:utext="${param.message[0]}">message</div>
+<div th:if="${param.message != null}" class="alert alert-info" th:text="${param.message[0]}">message</div>
 
 
 <div th:if="${param.error != null}" class="alert alert-danger" th:utext="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error</div>

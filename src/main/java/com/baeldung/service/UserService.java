@@ -159,9 +159,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserByPasswordResetToken(final String token) {
-        return passwordTokenRepository.findByToken(token)
-            .getUser();
+    public Optional<User> getUserByPasswordResetToken(final String token) {
+        return Optional.ofNullable(passwordTokenRepository.findByToken(token) .getUser());
     }
 
     @Override
