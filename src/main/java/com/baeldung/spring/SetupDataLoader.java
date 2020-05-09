@@ -62,7 +62,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    private final Privilege createPrivilegeIfNotFound(final String name) {
+    private Privilege createPrivilegeIfNotFound(final String name) {
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name);
@@ -72,7 +72,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    private final Role createRoleIfNotFound(final String name, final Collection<Privilege> privileges) {
+    private Role createRoleIfNotFound(final String name, final Collection<Privilege> privileges) {
         Role role = roleRepository.findByName(name);
         if (role == null) {
             role = new Role(name);
@@ -83,7 +83,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    private final User createUserIfNotFound(final String email, final String firstName, final String lastName, final String password, final Collection<Role> roles) {
+    private User createUserIfNotFound(final String email, final String firstName, final String lastName, final String password, final Collection<Role> roles) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             user = new User();
