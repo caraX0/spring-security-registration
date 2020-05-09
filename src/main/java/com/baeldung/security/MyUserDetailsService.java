@@ -86,10 +86,10 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private final String getClientIP() {
         final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
+        if (xfHeader != null) {
+            return xfHeader.split(",")[0];
         }
-        return xfHeader.split(",")[0];
+        return request.getRemoteAddr();
     }
 
 }
