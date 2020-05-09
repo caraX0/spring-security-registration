@@ -173,8 +173,7 @@ public class OldRegistrationController {
         final Locale locale = request.getLocale();
 
         final PasswordResetToken passToken = userService.getPasswordResetToken(token);
-        final User user = passToken.getUser();
-        if ((passToken == null) || (user.getId() != id)) {
+        if (passToken == null || passToken.getUser().getId() != id) {
             final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
             return "redirect:/login.html?lang=" + locale.getLanguage();
@@ -186,7 +185,7 @@ public class OldRegistrationController {
             return "redirect:/login.html?lang=" + locale.getLanguage();
         }
 
-        final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
+        final Authentication auth = new UsernamePasswordAuthenticationToken(passToken.getUser(), null, userDetailsService.loadUserByUsername(passToken.getUser().getEmail()).getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
