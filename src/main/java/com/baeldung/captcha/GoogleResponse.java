@@ -26,10 +26,10 @@ public class GoogleResponse {
     private ErrorCode[] errorCodes;
 
     
-    static enum ErrorCode {
+    enum ErrorCode {
         MissingSecret, InvalidSecret, MissingResponse, InvalidResponse, BadRequest, TimeoutOrDuplicate;
 
-        private static Map<String, ErrorCode> errorsMap = new HashMap<>(4);
+        private static Map<String, ErrorCode> errorsMap = new HashMap<>(6);
 
         static {
             errorsMap.put("missing-input-secret", MissingSecret);
