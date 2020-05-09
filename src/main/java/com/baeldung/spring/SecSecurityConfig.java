@@ -1,9 +1,13 @@
 package com.baeldung.spring;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.baeldung.persistence.dao.UserRepository;
 import com.baeldung.security.CustomRememberMeServices;
 import com.baeldung.security.google2fa.CustomAuthenticationProvider;
 import com.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
+import com.baeldung.security.location.DifferentLocationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,6 +29,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
+
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 @Configuration
 @ComponentScan(basePackages = { "com.baeldung.security" })
@@ -50,17 +57,20 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DifferentLocationChecker differentLocationChecker;
+
     public SecSecurityConfig() {
         super();
     }
 
-    
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-    
+
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider());
@@ -81,7 +91,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin",
                         "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*",
                         "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*","/user/savePassword*","/updatePassword*",
-                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*").permitAll()
+                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*","/user/enableNewLoc*").permitAll()
                 .antMatchers("/invalidSession*").anonymous()
                 .antMatchers("/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().hasAuthority("READ_PRIVILEGE")
@@ -122,6 +132,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         final CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
+        authProvider.setPostAuthenticationChecks(differentLocationChecker);
         return authProvider;
     }
 
@@ -140,4 +151,11 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         CustomRememberMeServices rememberMeServices = new CustomRememberMeServices("theKey", userDetailsService, new InMemoryTokenRepositoryImpl());
         return rememberMeServices;
     }
+
+    @Bean
+    public DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
+        final File resource = new File("src/main/resources/maxmind/GeoLite2-Country.mmdb");
+        return new DatabaseReader.Builder(resource).build();
+    }
+
 }
