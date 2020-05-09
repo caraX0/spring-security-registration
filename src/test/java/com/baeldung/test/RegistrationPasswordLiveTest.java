@@ -43,7 +43,7 @@ public class RegistrationPasswordLiveTest {
     }
 
     private int getResponseForPassword(String pass) {
-        final Map<String, String> param = new HashMap<String, String>();
+        final Map<String, String> param = new HashMap<>();
         final String randomName = UUID.randomUUID().toString();
         param.put("firstName", randomName);
         param.put("lastName", "Doe");
