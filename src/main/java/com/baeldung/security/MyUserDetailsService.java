@@ -59,11 +59,11 @@ public class MyUserDetailsService implements UserDetailsService {
 
     // UTIL
 
-    private final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
+    private Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
         return getGrantedAuthorities(getPrivileges(roles));
     }
 
-    private final List<String> getPrivileges(final Collection<Role> roles) {
+    private List<String> getPrivileges(final Collection<Role> roles) {
         final List<String> privileges = new ArrayList<String>();
         final List<Privilege> collection = new ArrayList<Privilege>();
         for (final Role role : roles) {
@@ -76,7 +76,7 @@ public class MyUserDetailsService implements UserDetailsService {
         return privileges;
     }
 
-    private final List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
+    private List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
         final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         for (final String privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));
@@ -84,7 +84,7 @@ public class MyUserDetailsService implements UserDetailsService {
         return authorities;
     }
 
-    private final String getClientIP() {
+    private String getClientIP() {
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader != null) {
             return xfHeader.split(",")[0];
