@@ -19,36 +19,36 @@ color:#000;
             <br/>
             <form action="/" method="POST" enctype="utf8" >
                 <div class="form-group row" >
-                    <label class="col-sm-3" th:utext="#{label.user.firstName}">first</label>
-                    <span class="col-sm-5"><input class="form-control" name="firstName" value="" required="required"/></span>
+                    <label for="firstName" class="col-sm-3" th:utext="#{label.user.firstName}">first</label>
+                    <span class="col-sm-5"><input id="firstName" class="form-control" name="firstName" value="" required="required"/></span>
                     <span id="firstNameError" class="alert alert-danger col-sm-4" style="display:none"></span>
                     
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3" th:utext="#{label.user.lastName}">last</label>
-                    <span class="col-sm-5"><input class="form-control" name="lastName" value="" required="required"/></span>
+                    <label for="lastName" class="col-sm-3" th:utext="#{label.user.lastName}">last</label>
+                    <span class="col-sm-5"><input id="lastName" class="form-control" name="lastName" value="" required="required"/></span>
                     <span id="lastNameError" class="alert alert-danger col-sm-4" style="display:none"></span>
                     
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3" th:utext="#{label.user.email}">email</label>
-                    <span class="col-sm-5"><input type="email" class="form-control" name="email" value="" required="required"/></span>                    
+                    <label for="email" class="col-sm-3" th:utext="#{label.user.email}">email</label>
+                    <span class="col-sm-5"><input id="email" type="email" class="form-control" name="email" value="" required="required"/></span>
                     <span id="emailError" class="alert alert-danger col-sm-4" style="display:none"></span>
                     
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3" th:utext="#{label.user.password}">password</label>
-                    <span class="col-sm-5"><input id="password" class="form-control" name="password" value="" type="password" required="required"/></span>
+                    <label for="password" class="col-sm-3" th:utext="#{label.user.password}">password</label>
+                    <span class="col-sm-5"><input id="password" class="form-control" name="password" value="" type="password" required="required" autocomplete="new-password"/></span>
                     <span id="passwordError" class="alert alert-danger col-sm-4" style="display:none"></span>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3" th:utext="#{label.user.confirmPass}">confirm</label>
-                    <span class="col-sm-5"><input id="matchPassword" class="form-control" name="matchingPassword" value="" type="password" required="required"/></span>
+                    <label for="matchPassword" class="col-sm-3" th:utext="#{label.user.confirmPass}">confirm</label>
+                    <span class="col-sm-5"><input id="matchPassword" class="form-control" name="matchingPassword" value="" type="password" required="required" autocomplete="new-password"/></span>
                     <span id="globalError" class="alert alert-danger col-sm-4" style="display:none"></span>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3" th:utext="#{label.user.2fa}">Use Two Step Verification</label>
-                    <span class="col-sm-5"><input type="checkbox" name="using2FA" value="true"/></span>
+                    <label for="using2FA" class="col-sm-3" th:utext="#{label.user.2fa}">Use Two Step Verification</label>
+                    <span class="col-sm-5"><input id="using2FA" type="checkbox" name="using2FA" value="true"/></span>
                 </div>
                 <br/>
                 <button type="submit" class="btn btn-primary" th:utext="#{label.form.submit}">submit</button>
