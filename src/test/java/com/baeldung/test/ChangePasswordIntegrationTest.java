@@ -1,7 +1,8 @@
 package com.baeldung.test;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -83,14 +84,14 @@ public class ChangePasswordIntegrationTest {
     public void givenNotAuthenticatedUser_whenBadPasswordLoggingIn_thenCorrect() {
         final RequestSpecification request = RestAssured.given().auth().form("XXXXXXXX@XXXXXXXXX.com", "XXXXXXXX", formConfig).redirects().follow(false);
 
-        request.when().get("/console.html").then().statusCode(IsNot.not(200)).body(isEmptyOrNullString());
+        request.when().get("/console.html").then().statusCode(IsNot.not(200)).body(is(emptyOrNullString()) );
     }
 
     @Test
     public void givenLoggedInUser_whenChangingPassword_thenCorrect() {
         final RequestSpecification request = RestAssured.given().auth().form("test@test.com", "test", formConfig);
 
-        final Map<String, String> params = new HashMap<String, String>();
+        final Map<String, String> params = new HashMap<>();
         params.put("oldPassword", "test");
         params.put("newPassword", "newTest&12");
 
@@ -104,7 +105,7 @@ public class ChangePasswordIntegrationTest {
     public void givenWrongOldPassword_whenChangingPassword_thenBadRequest() {
         final RequestSpecification request = RestAssured.given().auth().form("test@test.com", "test", formConfig);
 
-        final Map<String, String> params = new HashMap<String, String>();
+        final Map<String, String> params = new HashMap<>();
         params.put("oldPassword", "abc");
         params.put("newPassword", "newTest&12");
 
@@ -116,7 +117,7 @@ public class ChangePasswordIntegrationTest {
 
     @Test
     public void givenNotAuthenticatedUser_whenChangingPassword_thenRedirect() {
-        final Map<String, String> params = new HashMap<String, String>();
+        final Map<String, String> params = new HashMap<>();
         params.put("oldPassword", "abc");
         params.put("newPassword", "xyz");
 

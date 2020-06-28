@@ -8,7 +8,7 @@ public class ActiveUserStore {
     public List<String> users;
 
     public ActiveUserStore() {
-        users = new ArrayList<String>();
+        users = new ArrayList<>();
     }
 
     public List<String> getUsers() {
