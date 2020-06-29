@@ -78,7 +78,7 @@ public class UserService implements IUserService {
     @Override
     public User registerNewUserAccount(final UserDto accountDto) {
         if (emailExists(accountDto.getEmail())) {
-            throw new UserAlreadyExistException("There is an account with that email adress: " + accountDto.getEmail());
+            throw new UserAlreadyExistException("There is an account with that email address: " + accountDto.getEmail());
         }
         final User user = new User();
 
@@ -159,9 +159,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserByPasswordResetToken(final String token) {
-        return passwordTokenRepository.findByToken(token)
-            .getUser();
+    public Optional<User> getUserByPasswordResetToken(final String token) {
+        return Optional.ofNullable(passwordTokenRepository.findByToken(token) .getUser());
     }
 
     @Override

@@ -89,8 +89,8 @@ public class SpringSecurityRolesIntegrationTest {
         assertNotNull(userRepository.findByEmail(user.getEmail()));
         assertNotNull(roleRepository.findByName(role.getName()));
 
-        user.setRoles(new ArrayList<Role>());
-        role.setPrivileges(new ArrayList<Privilege>());
+        user.setRoles(new ArrayList<>());
+        role.setPrivileges(new ArrayList<>());
         roleRepository.delete(role);
 
         assertNull(roleRepository.findByName(role.getName()));
@@ -110,7 +110,7 @@ public class SpringSecurityRolesIntegrationTest {
         assertNotNull(roleRepository.findByName(role.getName()));
         assertNotNull(privilegeRepository.findByName(privilege.getName()));
 
-        role.setPrivileges(new ArrayList<Privilege>());
+        role.setPrivileges(new ArrayList<>());
         privilegeRepository.delete(privilege);
 
         assertNull(privilegeRepository.findByName(privilege.getName()));

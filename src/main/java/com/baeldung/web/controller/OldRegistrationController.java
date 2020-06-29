@@ -173,8 +173,7 @@ public class OldRegistrationController {
         final Locale locale = request.getLocale();
 
         final PasswordResetToken passToken = userService.getPasswordResetToken(token);
-        final User user = passToken.getUser();
-        if ((passToken == null) || (user.getId() != id)) {
+        if (passToken == null || passToken.getUser().getId() != id) {
             final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
             return "redirect:/login.html?lang=" + locale.getLanguage();
@@ -186,7 +185,7 @@ public class OldRegistrationController {
             return "redirect:/login.html?lang=" + locale.getLanguage();
         }
 
-        final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
+        final Authentication auth = new UsernamePasswordAuthenticationToken(passToken.getUser(), null, userDetailsService.loadUserByUsername(passToken.getUser().getEmail()).getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
@@ -205,7 +204,7 @@ public class OldRegistrationController {
 
     // NON-API
 
-    private final SimpleMailMessage constructResetVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
+    private SimpleMailMessage constructResetVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
         final String confirmationUrl = contextPath + "/old/registrationConfirm.html?token=" + newToken.getToken();
         final String message = messages.getMessage("message.resendToken", null, locale);
         final SimpleMailMessage email = new SimpleMailMessage();
@@ -216,7 +215,7 @@ public class OldRegistrationController {
         return email;
     }
 
-    private final SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
+    private SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
         final String url = contextPath + "/old/user/changePassword?id=" + user.getId() + "&token=" + token;
         final String message = messages.getMessage("message.resetPassword", null, locale);
         final SimpleMailMessage email = new SimpleMailMessage();

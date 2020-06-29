@@ -34,9 +34,7 @@ public class LoggedUser implements HttpSessionBindingListener {
     public void valueUnbound(HttpSessionBindingEvent event) {
         List<String> users = activeUserStore.getUsers();
         LoggedUser user = (LoggedUser) event.getValue();
-        if (users.contains(user.getUsername())) {
-            users.remove(user.getUsername());
-        }
+        users.remove(user.getUsername());
     }
 
     public String getUsername() {

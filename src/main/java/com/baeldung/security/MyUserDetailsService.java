@@ -59,13 +59,13 @@ public class MyUserDetailsService implements UserDetailsService {
 
     // UTIL
 
-    private final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
+    private Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
         return getGrantedAuthorities(getPrivileges(roles));
     }
 
-    private final List<String> getPrivileges(final Collection<Role> roles) {
-        final List<String> privileges = new ArrayList<String>();
-        final List<Privilege> collection = new ArrayList<Privilege>();
+    private List<String> getPrivileges(final Collection<Role> roles) {
+        final List<String> privileges = new ArrayList<>();
+        final List<Privilege> collection = new ArrayList<>();
         for (final Role role : roles) {
             collection.addAll(role.getPrivileges());
         }
@@ -76,20 +76,20 @@ public class MyUserDetailsService implements UserDetailsService {
         return privileges;
     }
 
-    private final List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+    private List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
+        final List<GrantedAuthority> authorities = new ArrayList<>();
         for (final String privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));
         }
         return authorities;
     }
 
-    private final String getClientIP() {
+    private String getClientIP() {
         final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
+        if (xfHeader != null) {
+            return xfHeader.split(",")[0];
         }
-        return xfHeader.split(",")[0];
+        return request.getRemoteAddr();
     }
 
 }

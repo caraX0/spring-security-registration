@@ -1,8 +1,10 @@
 package com.baeldung.web.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -10,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.baeldung.persistence.model.Role;
 import com.baeldung.security.ISecurityUserService;
 import com.baeldung.persistence.model.Privilege;
 import com.baeldung.persistence.model.User;
@@ -36,14 +39,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 public class RegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -75,6 +79,7 @@ public class RegistrationController {
     // Registration
 
     @PostMapping("/user/registration")
+    @ResponseBody
     public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
@@ -108,6 +113,7 @@ public class RegistrationController {
     // user activation - verification
 
     @GetMapping("/user/resendRegistrationToken")
+    @ResponseBody
     public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
         final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
         final User user = userService.getUser(newToken.getToken());
@@ -117,6 +123,7 @@ public class RegistrationController {
 
     // Reset password
     @PostMapping("/user/resetPassword")
+    @ResponseBody
     public GenericResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
         if (user != null) {
@@ -128,25 +135,44 @@ public class RegistrationController {
     }
 
     @GetMapping("/user/changePassword")
-    public String showChangePasswordPage(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
-        final String result = securityUserService.validatePasswordResetToken(id, token);
-        if (result != null) {
-            model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
-            return "redirect:/login?lang=" + locale.getLanguage();
+    public String showChangePasswordPage(
+            final Locale locale,
+            final Model model,
+            @RequestParam("token") final String token
+    ) {
+        final String result = securityUserService.validatePasswordResetToken(token);
+
+        if(result != null) {
+            String message = messages.getMessage("auth.message." + result, null, locale);
+            return "redirect:/login.html?lang=" + locale.getLanguage() + "&message=" + message;
+        } else {
+            model.addAttribute("token", token);
+            return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
         }
-        return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
     }
 
     @PostMapping("/user/savePassword")
+    @ResponseBody
     public GenericResponse savePassword(final Locale locale, @Valid PasswordDto passwordDto) {
-        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.changeUserPassword(user, passwordDto.getNewPassword());
-        return new GenericResponse(messages.getMessage("message.resetPasswordSuc", null, locale));
+
+        final String result = securityUserService.validatePasswordResetToken(passwordDto.getToken());
+
+        if(result != null) {
+            return new GenericResponse(messages.getMessage("auth.message." + result, null, locale));
+        }
+
+        Optional<User> user = userService.getUserByPasswordResetToken(passwordDto.getToken());
+        if(user.isPresent()) {
+            userService.changeUserPassword(user.get(), passwordDto.getNewPassword());
+            return new GenericResponse(messages.getMessage("message.resetPasswordSuc", null, locale));
+        } else {
+            return new GenericResponse(messages.getMessage("auth.message.invalid", null, locale));
+        }
     }
 
     // change user password
     @PostMapping("/user/updatePassword")
-    @PreAuthorize("hasRole('READ_PRIVILEGE')")
+    @ResponseBody
     public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
@@ -157,6 +183,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/user/update/2fa")
+    @ResponseBody
     public GenericResponse modifyUser2FA(@RequestParam("use2FA") final boolean use2FA) throws UnsupportedEncodingException {
         final User user = userService.updateUser2FA(use2FA);
         if (use2FA) {
@@ -185,7 +212,7 @@ public class RegistrationController {
     }
 
     private SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
-        final String url = contextPath + "/user/changePassword?id=" + user.getId() + "&token=" + token;
+        final String url = contextPath + "/user/changePassword?token=" + token;
         final String message = messages.getMessage("message.resetPassword", null, locale);
         return constructEmail("Reset Password", message + " \r\n" + url, user);
     }
@@ -203,7 +230,7 @@ public class RegistrationController {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
-    private final String getClientIP(HttpServletRequest request) {
+    private String getClientIP(HttpServletRequest request) {
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null) {
             return request.getRemoteAddr();
@@ -228,7 +255,7 @@ public class RegistrationController {
     }
 
     public void authWithoutPassword(User user) {
-        List<Privilege> privileges = user.getRoles().stream().map(role -> role.getPrivileges()).flatMap(list -> list.stream()).distinct().collect(Collectors.toList());
+        List<Privilege> privileges = user.getRoles().stream().map(Role::getPrivileges).flatMap(Collection::stream).distinct().collect(Collectors.toList());
         List<GrantedAuthority> authorities = privileges.stream().map(p -> new SimpleGrantedAuthority(p.getName())).collect(Collectors.toList());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
