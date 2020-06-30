@@ -26,6 +26,7 @@ import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.UserLocation;
 import com.baeldung.persistence.model.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,6 +59,7 @@ public class UserService implements IUserService {
     private SessionRegistry sessionRegistry;
 
     @Autowired
+    @Qualifier("GeoIPCountry")
     private DatabaseReader databaseReader;
 
     @Autowired
