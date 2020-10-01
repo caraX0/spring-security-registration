@@ -49,25 +49,10 @@ public class RegistrationController {
     private ISecurityUserService securityUserService;
 
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
     private MessageSource messages;
 
     public RegistrationController() {
         super();
-    }
-
-    // Registration
-    @PostMapping("/user/registration")
-    @ResponseBody
-    public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
-        LOGGER.debug("Registering user account with information: {}", accountDto);
-
-        final User registered = userService.registerNewUserAccount(accountDto);
-        userService.addUserLocation(registered, getClientIP(request));
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
-        return new GenericResponse("success");
     }
 
     @GetMapping("/registrationConfirm")
