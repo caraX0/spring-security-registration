@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.maxmind.geoip2.DatabaseReader;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -55,10 +56,6 @@ public class UserServiceIntegrationTest {
 
     @Autowired
     private VerificationTokenRepository tokenRepository;
-
-    @MockBean
-    private JavaMailSender javaMailSender;
-    //
 
     @Test
     public void givenNewUser_whenRegistered_thenCorrect() throws EmailExistsException {
