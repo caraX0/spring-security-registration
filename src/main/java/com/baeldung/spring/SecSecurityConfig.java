@@ -34,8 +34,6 @@ import org.springframework.security.web.authentication.rememberme.InMemoryTokenR
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 
-@Configuration
-@Order(2)
 @ComponentScan(basePackages = { "com.baeldung.security" })
 // @ImportResource({ "classpath:webSecurityConfig.xml" })
 @EnableWebSecurity
@@ -80,7 +78,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(final WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/resources/**");
+        web.ignoring()
+            .antMatchers("/resources/**")
+            .antMatchers("/h2/**");
     }
 
     @Override
