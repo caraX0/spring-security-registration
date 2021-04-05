@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Date;
+import org.springframework.transaction.annotation.Transactional;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -32,7 +33,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestDbConfig.class, TestIntegrationConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
+@SpringBootTest(classes = {Application.class, TestDbConfig.class, TestIntegrationConfig.class},
+    properties = "geo.ip.lib.enabled=true", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DeviceServiceIntegrationTest {
 
     @Autowired
@@ -44,7 +47,7 @@ public class DeviceServiceIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @Autowired
     private JavaMailSender mailSender;
 
     @Value("${local.server.port}")
