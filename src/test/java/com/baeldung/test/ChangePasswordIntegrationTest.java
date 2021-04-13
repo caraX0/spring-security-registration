@@ -21,7 +21,6 @@ import java.util.Map;
 import com.baeldung.Application;
 import com.baeldung.persistence.model.User;
 import org.hamcrest.core.IsNot;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,13 +71,6 @@ public class ChangePasswordIntegrationTest {
         RestAssured.baseURI = "http://localhost";
         URL = "/user/updatePassword";
         formConfig = new FormAuthConfig("/login", "username", "password");
-    }
-
-    @After
-    public void resetUserPassword() {
-        final User user = userRepository.findByEmail("test@test.com");
-        user.setPassword(passwordEncoder.encode("test"));
-        userRepository.save(user);
     }
 
     @Test

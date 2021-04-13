@@ -2,7 +2,6 @@ package com.baeldung.test;
 
 import static org.junit.Assert.assertTrue;
 
-import com.maxmind.geoip2.DatabaseReader;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -42,6 +41,9 @@ public class UserIntegrationTest {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @MockBean
+    private JavaMailSender javaMailSender;
 
     private Long tokenId;
     private Long userId;
