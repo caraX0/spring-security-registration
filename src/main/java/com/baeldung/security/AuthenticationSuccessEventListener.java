@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticationSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
+
     @Autowired
     private HttpServletRequest request;
 
@@ -17,10 +18,6 @@ public class AuthenticationSuccessEventListener implements ApplicationListener<A
 
     @Override
     public void onApplicationEvent(final AuthenticationSuccessEvent e) {
-        // final WebAuthenticationDetails auth = (WebAuthenticationDetails) e.getAuthentication().getDetails();
-        // if (auth != null) {
-        // loginAttemptService.loginSucceeded(auth.getRemoteAddress());
-        // }
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null) {
             loginAttemptService.loginSucceeded(request.getRemoteAddr());
@@ -28,5 +25,4 @@ public class AuthenticationSuccessEventListener implements ApplicationListener<A
             loginAttemptService.loginSucceeded(xfHeader.split(",")[0]);
         }
     }
-
 }
