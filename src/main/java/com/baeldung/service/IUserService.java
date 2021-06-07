@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.baeldung.web.dto.UserDto;
-import com.baeldung.web.error.UserAlreadyExistException;
 import com.baeldung.persistence.model.PasswordResetToken;
 import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.VerificationToken;
@@ -13,7 +12,7 @@ import com.baeldung.persistence.model.NewLocationToken;
 
 public interface IUserService {
 
-    User registerNewUserAccount(UserDto accountDto) throws UserAlreadyExistException;
+    User registerNewUserAccount(UserDto accountDto);
 
     User getUser(String verificationToken);
 
