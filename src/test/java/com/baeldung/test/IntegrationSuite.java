@@ -1,10 +1,11 @@
 package com.baeldung.test;
 
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ // @formatter:off
+@RunWith(JUnitPlatform.class)
+@SelectClasses({ // @formatter:off
     ChangePasswordIntegrationTest.class,
     DeviceServiceIntegrationTest.class,
     TokenExpirationIntegrationTest.class,
