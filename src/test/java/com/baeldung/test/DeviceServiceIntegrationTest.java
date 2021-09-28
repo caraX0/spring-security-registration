@@ -1,17 +1,16 @@
 package com.baeldung.test;
 
-import com.baeldung.Application;
-import com.baeldung.persistence.dao.DeviceMetadataRepository;
-import com.baeldung.persistence.dao.UserRepository;
-import com.baeldung.spring.TestDbConfig;
-import com.baeldung.spring.TestIntegrationConfig;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import com.baeldung.persistence.model.DeviceMetadata;
-import com.baeldung.persistence.model.User;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import java.util.Collections;
+import java.util.Date;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,20 +18,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Collections;
-import java.util.Date;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import com.baeldung.Application;
+import com.baeldung.persistence.dao.DeviceMetadataRepository;
+import com.baeldung.persistence.dao.UserRepository;
+import com.baeldung.persistence.model.DeviceMetadata;
+import com.baeldung.persistence.model.User;
+import com.baeldung.spring.TestDbConfig;
+import com.baeldung.spring.TestIntegrationConfig;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @Transactional
 @SpringBootTest(classes = {Application.class, TestDbConfig.class, TestIntegrationConfig.class},
     properties = "geo.ip.lib.enabled=true", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,7 +55,7 @@ public class DeviceServiceIntegrationTest {
 
     private Long userId;
 
-    @Before
+    @BeforeEach
     public void init() {
         User user = userRepository.findByEmail("test@test.com");
         if (user == null) {
@@ -86,8 +84,8 @@ public class DeviceServiceIntegrationTest {
                 .formParams("username", "test@test.com", "password", "test")
                 .post("/login");
 
-        assertEquals(302, response.statusCode());
-        assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
+        Assertions.assertEquals(302, response.statusCode());
+        Assertions.assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
         verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 
@@ -106,8 +104,8 @@ public class DeviceServiceIntegrationTest {
                 .formParams("username", "test@test.com", "password", "test")
                 .post("/login");
 
-        assertEquals(302, response.statusCode());
-        assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
+        Assertions.assertEquals(302, response.statusCode());
+        Assertions.assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
         verify(mailSender, times(0)).send(any(SimpleMailMessage.class));
     }
 
@@ -126,8 +124,8 @@ public class DeviceServiceIntegrationTest {
                 .formParams("username", "test@test.com", "password", "test")
                 .post("/login");
 
-        assertEquals(302, response.statusCode());
-        assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
+        Assertions.assertEquals(302, response.statusCode());
+        Assertions.assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
         verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 
@@ -146,8 +144,8 @@ public class DeviceServiceIntegrationTest {
                 .formParams("username", "test@test.com", "password", "test")
                 .post("/login");
 
-        assertEquals(302, response.statusCode());
-        assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
+        Assertions.assertEquals(302, response.statusCode());
+        Assertions.assertEquals("http://localhost:" + port + "/console", response.getHeader("Location"));
         verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 

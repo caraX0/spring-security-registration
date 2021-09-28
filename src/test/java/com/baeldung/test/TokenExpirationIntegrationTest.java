@@ -1,36 +1,30 @@
 package com.baeldung.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import com.baeldung.persistence.dao.UserRepository;
-import com.baeldung.spring.TestDbConfig;
-import com.baeldung.spring.TestTaskConfig;
-import com.baeldung.task.TokensPurgeTask;
 import com.baeldung.persistence.dao.VerificationTokenRepository;
 import com.baeldung.persistence.model.User;
 import com.baeldung.persistence.model.VerificationToken;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+import com.baeldung.spring.TestDbConfig;
+import com.baeldung.spring.TestTaskConfig;
+import com.baeldung.task.TokensPurgeTask;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { TestDbConfig.class, TestTaskConfig.class })
 @Transactional
 public class TokenExpirationIntegrationTest {
@@ -52,7 +46,7 @@ public class TokenExpirationIntegrationTest {
 
     //
 
-    @Before
+    @BeforeEach
     public void givenUserWithExpiredToken() {
 
         // we need a clear token repository
@@ -88,16 +82,16 @@ public class TokenExpirationIntegrationTest {
 
     @Test
     public void whenContextLoad_thenCorrect() {
-        assertNotNull(user_id);
-        assertNotNull(token_id);
-        assertTrue(userRepository.findById(user_id).isPresent());
+    	Assertions.assertNotNull(user_id);
+    	Assertions.assertNotNull(token_id);
+    	Assertions.assertTrue(userRepository.findById(user_id).isPresent());
 
         Optional<VerificationToken> verificationToken = tokenRepository.findById(token_id);
-        assertTrue(verificationToken.isPresent());
-        assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now())).anyMatch((token) -> token.equals(verificationToken.get())));
+        Assertions.assertTrue(verificationToken.isPresent());
+        Assertions.assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now())).anyMatch((token) -> token.equals(verificationToken.get())));
     }
 
-    @After
+    @AfterEach
     public void flushAfter() {
         entityManager.flush();
     }
@@ -105,18 +99,18 @@ public class TokenExpirationIntegrationTest {
     @Test
     public void whenRemoveByGeneratedQuery_thenCorrect() {
         tokenRepository.deleteByExpiryDateLessThan(Date.from(Instant.now()));
-        assertEquals(0, tokenRepository.count());
+        Assertions.assertEquals(0, tokenRepository.count());
     }
 
     @Test
     public void whenRemoveByJPQLQuery_thenCorrect() {
         tokenRepository.deleteAllExpiredSince(Date.from(Instant.now()));
-        assertEquals(0, tokenRepository.count());
+        Assertions.assertEquals(0, tokenRepository.count());
     }
 
     @Test
     public void whenPurgeTokenTask_thenCorrect() {
         tokensPurgeTask.purgeExpired();
-        assertFalse(tokenRepository.findById(token_id).isPresent());
+        Assertions.assertFalse(tokenRepository.findById(token_id).isPresent());
     }
 }

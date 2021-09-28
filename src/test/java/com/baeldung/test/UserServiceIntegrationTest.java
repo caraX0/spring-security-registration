@@ -1,20 +1,25 @@
 package com.baeldung.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import com.baeldung.persistence.dao.RoleRepository;
 import com.baeldung.persistence.dao.UserRepository;
+import com.baeldung.persistence.dao.VerificationTokenRepository;
+import com.baeldung.persistence.model.Role;
+import com.baeldung.persistence.model.User;
+import com.baeldung.persistence.model.VerificationToken;
 import com.baeldung.service.IUserService;
 import com.baeldung.service.UserService;
 import com.baeldung.spring.LoginNotificationConfig;
@@ -24,20 +29,8 @@ import com.baeldung.spring.TestIntegrationConfig;
 import com.baeldung.validation.EmailExistsException;
 import com.baeldung.web.dto.UserDto;
 import com.baeldung.web.error.UserAlreadyExistException;
-import com.baeldung.persistence.dao.VerificationTokenRepository;
-import com.baeldung.persistence.model.Role;
-import com.baeldung.persistence.model.User;
-import com.baeldung.persistence.model.VerificationToken;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class, LoginNotificationConfig.class})
 public class UserServiceIntegrationTest {
 
@@ -60,10 +53,10 @@ public class UserServiceIntegrationTest {
 
         final User user = userService.registerNewUserAccount(userDto);
 
-        assertNotNull(user);
-        assertNotNull(user.getEmail());
-        assertEquals(userEmail, user.getEmail());
-        assertNotNull(user.getId());
+        Assertions.assertNotNull(user);
+        Assertions.assertNotNull(user.getEmail());
+        Assertions.assertEquals(userEmail, user.getEmail());
+        Assertions.assertNotNull(user.getId());
     }
 
     @Test
@@ -77,51 +70,54 @@ public class UserServiceIntegrationTest {
         final User user = registerUser();
 
         // only roles are eagerly fetched
-        assertNotNull(user.getRoles());
+        Assertions.assertNotNull(user.getRoles());
 
         List<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
-        assertEquals(1, roles.size());
-        assertEquals("ROLE_USER", roles.iterator().next());
+        Assertions.assertEquals(1, roles.size());
+        Assertions.assertEquals("ROLE_USER", roles.iterator().next());
     }
 
     @Test
     public void givenDetachedUser_whenServiceLoadById_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.getUserByID(user.getId()).get();
-        assertEquals(user, user2);
+        Assertions.assertEquals(user, user2);
     }
 
     @Test
     public void givenDetachedUser_whenServiceLoadByEmail_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.findUserByEmail(user.getEmail());
-        assertEquals(user, user2);
+        Assertions.assertEquals(user, user2);
     }
 
-    @Test(expected = UserAlreadyExistException.class)
+    @Test
     public void givenUserRegistered_whenDuplicatedRegister_thenCorrect() {
-        final String email = UUID.randomUUID().toString();
-        final UserDto userDto = createUserDto(email);
+    	Assertions.assertThrows(UserAlreadyExistException.class, () -> {
+    		
+            final String email = UUID.randomUUID().toString();
+            final UserDto userDto = createUserDto(email);
+            userService.registerNewUserAccount(userDto);
+            userService.registerNewUserAccount(userDto);
+    	});
 
-        userService.registerNewUserAccount(userDto);
-        userService.registerNewUserAccount(userDto);
     }
 
     @Transactional
     public void givenUserRegistered_whenDtoRoleAdmin_thenUserNotAdmin() {
-        assertNotNull(roleRepository);
+    	Assertions.assertNotNull(roleRepository);
         final UserDto userDto = new UserDto();
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setPassword("SecretPassword");
         userDto.setMatchingPassword("SecretPassword");
         userDto.setFirstName("First");
         userDto.setLastName("Last");
-        assertNotNull(roleRepository.findByName("ROLE_ADMIN"));
+        Assertions.assertNotNull(roleRepository.findByName("ROLE_ADMIN"));
         final Long adminRoleId = roleRepository.findByName("ROLE_ADMIN").getId();
-        assertNotNull(adminRoleId);
+        Assertions.assertNotNull(adminRoleId);
         userDto.setRole(adminRoleId.intValue());
         final User user = userService.registerNewUserAccount(userDto);
-        assertFalse(user.getRoles().stream().map(Role::getId).anyMatch(ur -> ur.equals(adminRoleId)));
+        Assertions.assertFalse(user.getRoles().stream().map(Role::getId).anyMatch(ur -> ur.equals(adminRoleId)));
     }
 
     @Test
@@ -145,13 +141,13 @@ public class UserServiceIntegrationTest {
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
         final VerificationToken verificationToken = userService.getVerificationToken(token);
-        assertNotNull(verificationToken);
-        assertNotNull(verificationToken.getId());
-        assertNotNull(verificationToken.getUser());
-        assertEquals(user, verificationToken.getUser());
-        assertEquals(user.getId(), verificationToken.getUser().getId());
-        assertEquals(token, verificationToken.getToken());
-        assertTrue(verificationToken.getExpiryDate().toInstant().isAfter(Instant.now()));
+        Assertions.assertNotNull(verificationToken);
+        Assertions.assertNotNull(verificationToken.getId());
+        Assertions.assertNotNull(verificationToken.getUser());
+        Assertions.assertEquals(user, verificationToken.getUser());
+        Assertions.assertEquals(user.getId(), verificationToken.getUser().getId());
+        Assertions.assertEquals(token, verificationToken.getToken());
+        Assertions.assertTrue(verificationToken.getExpiryDate().toInstant().isAfter(Instant.now()));
     }
 
     @Test
@@ -162,14 +158,16 @@ public class UserServiceIntegrationTest {
         userService.deleteUser(user);
     }
 
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test
     public void givenUserAndToken_whenRemovingUserByDao_thenFKViolation() {
-        final User user = registerUser();
-        final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user, token);
-        final long userId = user.getId();
-        userService.getVerificationToken(token).getId();
-        userRepository.deleteById(userId);
+    	Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+            final User user = registerUser();
+            final String token = UUID.randomUUID().toString();
+            userService.createVerificationTokenForUser(user, token);
+            final long userId = user.getId();
+            userService.getVerificationToken(token).getId();
+            userRepository.deleteById(userId);
+    	});
     }
 
     @Test
@@ -199,9 +197,9 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final VerificationToken origToken = userService.getVerificationToken(token);
         final VerificationToken newToken = userService.generateNewVerificationToken(token);
-        assertNotEquals(newToken.getToken(), origToken.getToken());
-        assertNotEquals(newToken.getExpiryDate(), origToken.getExpiryDate());
-        assertNotEquals(newToken, origToken);
+        Assertions.assertNotEquals(newToken.getToken(), origToken.getToken());
+        Assertions.assertNotEquals(newToken.getExpiryDate(), origToken.getExpiryDate());
+        Assertions.assertNotEquals(newToken, origToken);
     }
 
     @Test
@@ -211,9 +209,9 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final String token_status = userService.validateVerificationToken(token);
-        Assert.assertEquals(token_status, UserService.TOKEN_VALID);
+        Assertions.assertEquals(token_status, UserService.TOKEN_VALID);
         user = userService.getUserByID(userId).get();
-        assertTrue(user.isEnabled());
+        Assertions.assertTrue(user.isEnabled());
     }
 
     @Test
@@ -237,7 +235,7 @@ public class UserServiceIntegrationTest {
         verificationToken.setExpiryDate(Date.from(verificationToken.getExpiryDate().toInstant().minus(2, ChronoUnit.DAYS)));
         tokenRepository.saveAndFlush(verificationToken);
         final String token_status = userService.validateVerificationToken(token);
-        assertNotNull(token_status);
+        Assertions.assertNotNull(token_status);
         token_status.equals(UserService.TOKEN_EXPIRED);
     }
 
@@ -258,9 +256,9 @@ public class UserServiceIntegrationTest {
         final String email = UUID.randomUUID().toString();
         final UserDto userDto = createUserDto(email);
         final User user = userService.registerNewUserAccount(userDto);
-        assertNotNull(user);
-        assertNotNull(user.getId());
-        assertEquals(email, user.getEmail());
+        Assertions.assertNotNull(user);
+        Assertions.assertNotNull(user.getId());
+        Assertions.assertEquals(email, user.getEmail());
         return user;
     }
 

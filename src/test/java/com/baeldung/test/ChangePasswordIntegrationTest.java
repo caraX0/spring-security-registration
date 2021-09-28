@@ -3,11 +3,23 @@ package com.baeldung.test;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import java.util.HashMap;
+import java.util.Map;
+import org.hamcrest.core.IsNot;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import com.baeldung.Application;
 import com.baeldung.persistence.dao.UserRepository;
+import com.baeldung.persistence.model.User;
 import com.baeldung.spring.TestDbConfig;
 import com.baeldung.spring.TestIntegrationConfig;
 import io.restassured.RestAssured;
@@ -15,26 +27,8 @@ import io.restassured.authentication.FormAuthConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import com.baeldung.Application;
-import com.baeldung.persistence.model.User;
-import org.hamcrest.core.IsNot;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
-
-
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ChangePasswordIntegrationTest {
 
@@ -52,7 +46,7 @@ public class ChangePasswordIntegrationTest {
 
     //
 
-    @Before
+    @BeforeEach
     public void init() {
         User user = userRepository.findByEmail("test@test.com");
         if (user == null) {
@@ -74,7 +68,7 @@ public class ChangePasswordIntegrationTest {
         formConfig = new FormAuthConfig("/login", "username", "password");
     }
 
-    @After
+    @AfterEach
     public void resetUserPassword() {
         final User user = userRepository.findByEmail("test@test.com");
         user.setPassword(passwordEncoder.encode("test"));
@@ -105,8 +99,8 @@ public class ChangePasswordIntegrationTest {
 
         final Response response = request.with().queryParams(params).post(URL);
 
-        assertEquals(200, response.statusCode());
-        assertTrue(response.body().asString().contains("Password updated successfully"));
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertTrue(response.body().asString().contains("Password updated successfully"));
     }
 
     @Test
@@ -119,8 +113,8 @@ public class ChangePasswordIntegrationTest {
 
         final Response response = request.with().queryParams(params).post(URL);
 
-        assertEquals(400, response.statusCode());
-        assertTrue(response.body().asString().contains("Invalid Old Password"));
+        Assertions.assertEquals(400, response.statusCode());
+        Assertions.assertTrue(response.body().asString().contains("Invalid Old Password"));
     }
 
     @Test
@@ -131,8 +125,8 @@ public class ChangePasswordIntegrationTest {
 
         final Response response = RestAssured.with().params(params).post(URL);
 
-        assertEquals(302, response.statusCode());
-        assertFalse(response.body().asString().contains("Password updated successfully"));
+        Assertions.assertEquals(302, response.statusCode());
+        Assertions.assertFalse(response.body().asString().contains("Password updated successfully"));
     }
 
 }
