@@ -1,12 +1,13 @@
 package com.baeldung.test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -75,8 +76,8 @@ public class UserIntegrationTest {
 
     @Test
     public void whenContextLoad_thenCorrect() {
-    	Assertions.assertTrue(userRepository.count() > 0);
-    	Assertions.assertTrue(tokenRepository.count() > 0);
+    	assertTrue(userRepository.count() > 0);
+    	assertTrue(tokenRepository.count() > 0);
     }
 
     // @Test(expected = Exception.class)

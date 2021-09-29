@@ -1,8 +1,11 @@
 package com.baeldung.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,11 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.baeldung.Application;
 import com.baeldung.persistence.dao.UserRepository;
 import com.baeldung.persistence.model.User;
 import com.baeldung.spring.TestDbConfig;
 import com.baeldung.spring.TestIntegrationConfig;
+
 import io.restassured.RestAssured;
 import io.restassured.authentication.FormAuthConfig;
 import io.restassured.response.Response;
@@ -73,8 +78,8 @@ public class GetLoggedUsersIntegrationTest {
 
         final Response response = request.with().params(params).get(LOGGED_USERS_URL);
 
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertTrue(response.body().asString().contains("test@test.com"));
+        assertEquals(200, response.statusCode());
+        assertTrue(response.body().asString().contains("test@test.com"));
     }
 
     @Test
@@ -86,8 +91,8 @@ public class GetLoggedUsersIntegrationTest {
 
         final Response response = request.with().params(params).get(SESSION_REGISTRY_LOGGED_USERS_URL);
 
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertTrue(response.body().asString().contains("test@test.com"));
+        assertEquals(200, response.statusCode());
+        assertTrue(response.body().asString().contains("test@test.com"));
     }
 
 }

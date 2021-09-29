@@ -1,10 +1,11 @@
 package com.baeldung.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,28 +19,28 @@ public class RegistrationPasswordLiveTest {
     @Test
     public void givenInvalidPassword_thenBadRequest() {
         // too short
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("123"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("123"));
 
         // no special character
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1abZRplYU"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1abZRplYU"));
 
         // no upper case letter
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abidpsvl"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abidpsvl"));
 
         // no number
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("abZRYUpl"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("abZRYUpl"));
 
         // alphabet sequence
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abcZRYU"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abcZRYU"));
 
         // qwerty sequence
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abZRTYU"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("1_abZRTYU"));
 
         // numeric sequence
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("123_zqrtU"));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), getResponseForPassword("123_zqrtU"));
 
         // valid password
-        Assertions.assertEquals(HttpStatus.OK.value(), getResponseForPassword("12_zwRHIPKA"));
+        assertEquals(HttpStatus.OK.value(), getResponseForPassword("12_zwRHIPKA"));
     }
 
     private int getResponseForPassword(String pass) {
