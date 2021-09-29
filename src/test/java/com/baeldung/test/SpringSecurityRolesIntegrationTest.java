@@ -1,8 +1,11 @@
 package com.baeldung.test;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.jupiter.api.Assertions;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.baeldung.persistence.dao.PrivilegeRepository;
 import com.baeldung.persistence.dao.RoleRepository;
 import com.baeldung.persistence.dao.UserRepository;
@@ -55,13 +59,13 @@ public class SpringSecurityRolesIntegrationTest {
         user.setEnabled(true);
         userRepository.save(user);
 
-        Assertions.assertNotNull(userRepository.findByEmail(user.getEmail()));
-        Assertions.assertNotNull(roleRepository.findByName(role.getName()));
+        assertNotNull(userRepository.findByEmail(user.getEmail()));
+        assertNotNull(roleRepository.findByName(role.getName()));
         user.setRoles(null);
         userRepository.delete(user);
 
-        Assertions.assertNull(userRepository.findByEmail(user.getEmail()));
-        Assertions.assertNotNull(roleRepository.findByName(role.getName()));
+        assertNull(userRepository.findByEmail(user.getEmail()));
+        assertNotNull(roleRepository.findByName(role.getName()));
     }
 
     @Test
@@ -82,17 +86,17 @@ public class SpringSecurityRolesIntegrationTest {
         user.setEnabled(true);
         userRepository.save(user);
 
-        Assertions.assertNotNull(privilegeRepository.findByName(privilege.getName()));
-        Assertions.assertNotNull(userRepository.findByEmail(user.getEmail()));
-        Assertions.assertNotNull(roleRepository.findByName(role.getName()));
+        assertNotNull(privilegeRepository.findByName(privilege.getName()));
+        assertNotNull(userRepository.findByEmail(user.getEmail()));
+        assertNotNull(roleRepository.findByName(role.getName()));
 
         user.setRoles(new ArrayList<>());
         role.setPrivileges(new ArrayList<>());
         roleRepository.delete(role);
 
-        Assertions.assertNull(roleRepository.findByName(role.getName()));
-        Assertions.assertNotNull(privilegeRepository.findByName(privilege.getName()));
-        Assertions.assertNotNull(userRepository.findByEmail(user.getEmail()));
+        assertNull(roleRepository.findByName(role.getName()));
+        assertNotNull(privilegeRepository.findByName(privilege.getName()));
+        assertNotNull(userRepository.findByEmail(user.getEmail()));
     }
 
     @Test
@@ -104,13 +108,13 @@ public class SpringSecurityRolesIntegrationTest {
         role.setPrivileges(Arrays.asList(privilege));
         roleRepository.save(role);
 
-        Assertions.assertNotNull(roleRepository.findByName(role.getName()));
-        Assertions.assertNotNull(privilegeRepository.findByName(privilege.getName()));
+        assertNotNull(roleRepository.findByName(role.getName()));
+        assertNotNull(privilegeRepository.findByName(privilege.getName()));
 
         role.setPrivileges(new ArrayList<>());
         privilegeRepository.delete(privilege);
 
-        Assertions.assertNull(privilegeRepository.findByName(privilege.getName()));
-        Assertions.assertNotNull(roleRepository.findByName(role.getName()));
+        assertNull(privilegeRepository.findByName(privilege.getName()));
+        assertNotNull(roleRepository.findByName(role.getName()));
     }
 }
