@@ -237,7 +237,7 @@
         <logstash-logback-encoder.version>4.8</logstash-logback-encoder.version>
         <aerogear.version>1.0.0</aerogear.version>
         <uap-java.version>1.4.0</uap-java.version>
-        <geoip2.version>2.12.0</geoip2.version>
+        <geoip2.version>2.15.0</geoip2.version>
 	</properties>
 
 </project>
