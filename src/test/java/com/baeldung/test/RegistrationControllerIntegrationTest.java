@@ -18,19 +18,14 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import com.baeldung.spring.TestDbConfig;
-import com.baeldung.spring.TestIntegrationConfig;
-import com.baeldung.Application;
-import com.baeldung.persistence.model.User;
-import com.baeldung.persistence.model.VerificationToken;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,7 +34,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
-@RunWith(SpringRunner.class)
+import com.baeldung.Application;
+import com.baeldung.persistence.model.User;
+import com.baeldung.persistence.model.VerificationToken;
+import com.baeldung.spring.TestDbConfig;
+import com.baeldung.spring.TestIntegrationConfig;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
 public class RegistrationControllerIntegrationTest {
@@ -53,7 +54,7 @@ public class RegistrationControllerIntegrationTest {
     private MockMvc mockMvc;
     private String token;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 

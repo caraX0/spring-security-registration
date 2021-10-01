@@ -1,10 +1,12 @@
 package com.baeldung.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -13,8 +15,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.baeldung.persistence.dao.RoleRepository;
 import com.baeldung.persistence.dao.UserRepository;
+import com.baeldung.persistence.dao.VerificationTokenRepository;
+import com.baeldung.persistence.model.Role;
+import com.baeldung.persistence.model.User;
+import com.baeldung.persistence.model.VerificationToken;
 import com.baeldung.service.IUserService;
 import com.baeldung.service.UserService;
 import com.baeldung.spring.LoginNotificationConfig;
@@ -24,20 +38,8 @@ import com.baeldung.spring.TestIntegrationConfig;
 import com.baeldung.validation.EmailExistsException;
 import com.baeldung.web.dto.UserDto;
 import com.baeldung.web.error.UserAlreadyExistException;
-import com.baeldung.persistence.dao.VerificationTokenRepository;
-import com.baeldung.persistence.model.Role;
-import com.baeldung.persistence.model.User;
-import com.baeldung.persistence.model.VerificationToken;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class, LoginNotificationConfig.class})
 public class UserServiceIntegrationTest {
 
@@ -98,18 +100,21 @@ public class UserServiceIntegrationTest {
         assertEquals(user, user2);
     }
 
-    @Test(expected = UserAlreadyExistException.class)
+    @Test
     public void givenUserRegistered_whenDuplicatedRegister_thenCorrect() {
-        final String email = UUID.randomUUID().toString();
-        final UserDto userDto = createUserDto(email);
+    	assertThrows(UserAlreadyExistException.class, () -> {
+    		
+            final String email = UUID.randomUUID().toString();
+            final UserDto userDto = createUserDto(email);
+            userService.registerNewUserAccount(userDto);
+            userService.registerNewUserAccount(userDto);
+    	});
 
-        userService.registerNewUserAccount(userDto);
-        userService.registerNewUserAccount(userDto);
     }
 
     @Transactional
     public void givenUserRegistered_whenDtoRoleAdmin_thenUserNotAdmin() {
-        assertNotNull(roleRepository);
+    	assertNotNull(roleRepository);
         final UserDto userDto = new UserDto();
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setPassword("SecretPassword");
@@ -162,14 +167,16 @@ public class UserServiceIntegrationTest {
         userService.deleteUser(user);
     }
 
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test
     public void givenUserAndToken_whenRemovingUserByDao_thenFKViolation() {
-        final User user = registerUser();
-        final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user, token);
-        final long userId = user.getId();
-        userService.getVerificationToken(token).getId();
-        userRepository.deleteById(userId);
+    	assertThrows(DataIntegrityViolationException.class, () -> {
+            final User user = registerUser();
+            final String token = UUID.randomUUID().toString();
+            userService.createVerificationTokenForUser(user, token);
+            final long userId = user.getId();
+            userService.getVerificationToken(token).getId();
+            userRepository.deleteById(userId);
+    	});
     }
 
     @Test
@@ -211,7 +218,7 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final String token_status = userService.validateVerificationToken(token);
-        Assert.assertEquals(token_status, UserService.TOKEN_VALID);
+        assertEquals(token_status, UserService.TOKEN_VALID);
         user = userService.getUserByID(userId).get();
         assertTrue(user.isEnabled());
     }
