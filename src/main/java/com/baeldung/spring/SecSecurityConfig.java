@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .logout()
                 .logoutSuccessHandler(myLogoutSuccessHandler)
-                .invalidateHttpSession(false)
+                .invalidateHttpSession(true)
                 .logoutSuccessUrl("/logout.html?logSucc=true")
                 .deleteCookies("JSESSIONID")
                 .permitAll()
@@ -171,4 +172,8 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         return expressionHandler;
     }
 
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
 }
