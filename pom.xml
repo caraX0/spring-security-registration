@@ -232,7 +232,7 @@
 		<javax.servlet.jsp-api.version>2.3.2-b01</javax.servlet.jsp-api.version>
         <javax.el.version>2.2</javax.el.version>
 		<jstl.version>1.2</jstl.version>
-		<guava.version>20.0</guava.version>
+		<guava.version>30.0-jre</guava.version>
 		<passay.version>1.0</passay.version>
         <logstash-logback-encoder.version>4.8</logstash-logback-encoder.version>
         <aerogear.version>1.0.0</aerogear.version>
