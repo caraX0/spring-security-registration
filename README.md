@@ -22,7 +22,7 @@ If you're not yet a student, you can get access to the course here: https://bit.
 - [Custom Login Page for Returning User](https://www.baeldung.com/custom-login-page-for-returning-user)
 - [Allow Authentication from Accepted Locations Only with Spring Security](https://www.baeldung.com/spring-security-restrict-authentication-by-geography)
 - [Spring Security – Auto Login User After Registration](https://www.baeldung.com/spring-security-auto-login-user-after-registration)
-- [Keep Track of Logged In Users with Spring Security](https://www.baeldung.com/spring-security-track-logged-in-users)
+- [Keep Track of Logged in Users With Spring Security](https://www.baeldung.com/spring-security-track-logged-in-users)
 - [Login For a Spring Web App – Error Handling and Localization](https://www.baeldung.com/spring-security-login-error-handling-localization)
 - [Notify User of Login From New Device or Location](https://www.baeldung.com/spring-security-login-new-device-location)
 - [Preventing Username Enumeration Attacks with Spring Security](https://www.baeldung.com/spring-security-enumeration-attacks)
