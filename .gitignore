@@ -24,3 +24,9 @@ target/
 .idea/
 *.iml
 *.iws
+/.apt_generated_tests/
+
+**/META-INF/maven
+**/META-INF/MANIFEST.MF
+
+*.log
