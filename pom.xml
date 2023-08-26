@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.5</version>
+		<version>3.1.0</version>
 	</parent>
 
 	<dependencies>
@@ -51,14 +51,14 @@
 		</dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<scope>runtime</scope>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet-api.version}</version>
 		</dependency>
         
         <dependency>
@@ -84,6 +84,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql-connector-java.version}</version>
 		</dependency>
 
 		<dependency>
@@ -166,8 +167,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
 
@@ -228,10 +229,12 @@
 	</profiles>
 
 	<properties>
-		<java-version>1.8</java-version>
+		<java-version>17</java-version>
 		<javax.servlet.jsp-api.version>2.3.2-b01</javax.servlet.jsp-api.version>
         <javax.el.version>2.2</javax.el.version>
 		<jstl.version>1.2</jstl.version>
+		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+		<mysql-connector-java.version>8.0.32</mysql-connector-java.version>
 		<guava.version>32.0.0-jre</guava.version>
 		<passay.version>1.0</passay.version>
         <logstash-logback-encoder.version>4.8</logstash-logback-encoder.version>

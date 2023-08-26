@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ import com.baeldung.task.TokensPurgeTask;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { TestDbConfig.class, TestTaskConfig.class })
 @Transactional
-public class TokenExpirationIntegrationTest {
+class TokenExpirationIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -88,7 +88,7 @@ public class TokenExpirationIntegrationTest {
     }
 
     @Test
-    public void whenContextLoad_thenCorrect() {
+    void whenContextLoad_thenCorrect() {
     	assertNotNull(user_id);
     	assertNotNull(token_id);
     	assertTrue(userRepository.findById(user_id).isPresent());
@@ -104,19 +104,19 @@ public class TokenExpirationIntegrationTest {
     }
 
     @Test
-    public void whenRemoveByGeneratedQuery_thenCorrect() {
+    void whenRemoveByGeneratedQuery_thenCorrect() {
         tokenRepository.deleteByExpiryDateLessThan(Date.from(Instant.now()));
         assertEquals(0, tokenRepository.count());
     }
 
     @Test
-    public void whenRemoveByJPQLQuery_thenCorrect() {
+    void whenRemoveByJPQLQuery_thenCorrect() {
         tokenRepository.deleteAllExpiredSince(Date.from(Instant.now()));
         assertEquals(0, tokenRepository.count());
     }
 
     @Test
-    public void whenPurgeTokenTask_thenCorrect() {
+    void whenPurgeTokenTask_thenCorrect() {
         tokensPurgeTask.purgeExpired();
         assertFalse(tokenRepository.findById(token_id).isPresent());
     }

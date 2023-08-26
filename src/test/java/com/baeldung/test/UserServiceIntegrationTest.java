@@ -41,7 +41,7 @@ import com.baeldung.web.error.UserAlreadyExistException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class, LoginNotificationConfig.class})
-public class UserServiceIntegrationTest {
+class UserServiceIntegrationTest {
 
     @Autowired
     private IUserService userService;
@@ -56,7 +56,7 @@ public class UserServiceIntegrationTest {
     private VerificationTokenRepository tokenRepository;
 
     @Test
-    public void givenNewUser_whenRegistered_thenCorrect() throws EmailExistsException {
+    void givenNewUser_whenRegistered_thenCorrect() throws EmailExistsException {
         final String userEmail = UUID.randomUUID().toString();
         final UserDto userDto = createUserDto(userEmail);
 
@@ -69,7 +69,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenDetachedUser_whenAccessingEntityAssociations_thenCorrect() {
+    void givenDetachedUser_whenAccessingEntityAssociations_thenCorrect() {
         Role role = roleRepository.findByName("ROLE_USER");
         if (role == null) {
             roleRepository.saveAndFlush(new Role("ROLE_USER"));
@@ -87,21 +87,21 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenDetachedUser_whenServiceLoadById_thenCorrect() throws EmailExistsException {
+    void givenDetachedUser_whenServiceLoadById_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.getUserByID(user.getId()).get();
         assertEquals(user, user2);
     }
 
     @Test
-    public void givenDetachedUser_whenServiceLoadByEmail_thenCorrect() throws EmailExistsException {
+    void givenDetachedUser_whenServiceLoadByEmail_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.findUserByEmail(user.getEmail());
         assertEquals(user, user2);
     }
 
     @Test
-    public void givenUserRegistered_whenDuplicatedRegister_thenCorrect() {
+    void givenUserRegistered_whenDuplicatedRegister_thenCorrect() {
     	assertThrows(UserAlreadyExistException.class, () -> {
     		
             final String email = UUID.randomUUID().toString();
@@ -130,14 +130,14 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserRegistered_whenCreateToken_thenCorrect() {
+    void givenUserRegistered_whenCreateToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
     }
 
     @Test
-    public void givenUserRegistered_whenCreateTokenCreateDuplicate_thenCorrect() {
+    void givenUserRegistered_whenCreateTokenCreateDuplicate_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -145,7 +145,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenLoadToken_thenCorrect() {
+    void givenUserAndToken_whenLoadToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -160,7 +160,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenRemovingUser_thenCorrect() {
+    void givenUserAndToken_whenRemovingUser_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -168,7 +168,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenRemovingUserByDao_thenFKViolation() {
+    void givenUserAndToken_whenRemovingUserByDao_thenFKViolation() {
     	assertThrows(DataIntegrityViolationException.class, () -> {
             final User user = registerUser();
             final String token = UUID.randomUUID().toString();
@@ -180,7 +180,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenRemovingTokenThenUser_thenCorrect() {
+    void givenUserAndToken_whenRemovingTokenThenUser_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -191,7 +191,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenRemovingToken_thenCorrect() {
+    void givenUserAndToken_whenRemovingToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -200,7 +200,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserAndToken_whenNewTokenRequest_thenCorrect() {
+    void givenUserAndToken_whenNewTokenRequest_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -212,7 +212,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenTokenValidation_whenValid_thenUserEnabled_andTokenRemoved() {
+    void givenTokenValidation_whenValid_thenUserEnabled_andTokenRemoved() {
         User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -224,7 +224,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenTokenValidation_whenInvalid_thenCorrect() {
+    void givenTokenValidation_whenInvalid_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         final String invalid_token = "INVALID_" + UUID.randomUUID().toString();
@@ -235,7 +235,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenTokenValidation_whenExpired_thenCorrect() {
+    void givenTokenValidation_whenExpired_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);

@@ -15,8 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ import com.baeldung.spring.TestIntegrationConfig;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
-public class RegistrationControllerIntegrationTest {
+class RegistrationControllerIntegrationTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -79,7 +79,7 @@ public class RegistrationControllerIntegrationTest {
     }
 
     @Test
-    public void testRegistrationConfirm() throws Exception {
+    void testRegistrationConfirm() throws Exception {
         ResultActions resultActions = this.mockMvc.perform(get("/registrationConfirm?token=" + token));
         resultActions.andExpect(status().is3xxRedirection());
         resultActions.andExpect(model().attribute("messageKey", "message.accountVerified"));
@@ -87,7 +87,7 @@ public class RegistrationControllerIntegrationTest {
     }
 
     @Test
-    public void testRegistrationValidation() throws Exception {
+    void testRegistrationValidation() throws Exception {
 
         final MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
         param.add("firstName", "");

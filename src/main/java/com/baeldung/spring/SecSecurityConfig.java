@@ -7,10 +7,12 @@ import com.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
 import com.baeldung.security.location.DifferentLocationChecker;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,11 +21,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -32,13 +36,14 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.File;
 import java.io.IOException;
 
-@ComponentScan(basePackages = { "com.baeldung.security" })
 // @ImportResource({ "classpath:webSecurityConfig.xml" })
 @EnableWebSecurity
+@Configuration
 public class SecSecurityConfig {
 
     @Autowired
@@ -59,7 +64,6 @@ public class SecSecurityConfig {
     @Autowired
     private UserRepository userRepository;
 
-
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -70,70 +74,71 @@ public class SecSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .antMatchers("/resources/**", "/h2/**");
+            .requestMatchers(new AntPathRequestMatcher("/resources/**", "/h2/**"));
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-            .disable()
-            .authorizeRequests()
-                .expressionHandler(webSecurityExpressionHandler())
-                .antMatchers(HttpMethod.GET, "/roleHierarchy")
-                .hasRole("STAFF")
-            .antMatchers("/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin", "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*", "/badUser*", "/user/resendRegistrationToken*", "/forgetPassword*",
-                "/user/resetPassword*", "/user/savePassword*", "/updatePassword*", "/user/changePassword*", "/emailError*", "/resources/**", "/old/user/registration*", "/successRegister*", "/qrcode*", "/user/enableNewLoc*")
-            .permitAll()
-            .antMatchers("/invalidSession*")
-            .anonymous()
-            .antMatchers("/user/updatePassword*")
-            .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
-            .anyRequest()
-            .hasAuthority("READ_PRIVILEGE")
-            .and()
-            .formLogin()
-            .loginPage("/login")
-            .defaultSuccessUrl("/homepage.html")
-            .failureUrl("/login?error=true")
-            .successHandler(myAuthenticationSuccessHandler)
-            .failureHandler(authenticationFailureHandler)
-            .authenticationDetailsSource(authenticationDetailsSource)
-            .permitAll()
-            .and()
-            .sessionManagement()
-            .invalidSessionUrl("/invalidSession.html")
-            .maximumSessions(1)
-            .sessionRegistry(sessionRegistry())
-            .and()
-            .sessionFixation()
-            .none()
-            .and()
-            .logout()
-            .logoutSuccessHandler(myLogoutSuccessHandler)
-            .invalidateHttpSession(true)
-            .logoutSuccessUrl("/logout.html?logSucc=true")
-            .deleteCookies("JSESSIONID")
-            .permitAll()
-            .and()
-            .rememberMe()
-            .rememberMeServices(rememberMeServices())
-            .key("theKey");
+        http.csrf(AbstractHttpConfigurer::disable)
+            .securityContext((securityContext) -> securityContext.requireExplicitSave(true))
+            .authorizeHttpRequests(authz -> {
+                authz.requestMatchers("/**")
+                    .hasRole("USER")
+                    .requestMatchers("/admin/**")
+                    .hasRole("All")
+                    .requestMatchers(HttpMethod.GET, "/roleHierarchy")
+                    .hasRole("STAFF")
+                    .requestMatchers("/invalidSession*")
+                    .anonymous()
+                    .requestMatchers("/user/updatePassword*")
+                    .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
+                    .requestMatchers("/console")
+                    .hasAuthority("READ_PRIVILEGE")
+                    .requestMatchers("/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin", "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*", "/badUser*", "/user/resendRegistrationToken*", "/forgetPassword*",
+                        "/user/resetPassword*", "/user/savePassword*", "/updatePassword*", "/user/changePassword*", "/emailError*", "/resources/**", "/old/user/registration*", "/successRegister*", "/qrcode*", "/user/enableNewLoc*")
+                    .permitAll()
+                    .anyRequest()
+                    .hasAuthority("READ_PRIVILEGE");
+            })
+            .formLogin((formLogin) -> formLogin.loginPage("/login")
+                .defaultSuccessUrl("/homepage.html")
+                .failureUrl("/login?error=true")
+                .successHandler(myAuthenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler)
+                .authenticationDetailsSource(authenticationDetailsSource)
+                .permitAll())
+            .sessionManagement((sessionManagement) -> sessionManagement.invalidSessionUrl("/invalidSession.html")
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry()))
+            .logout((logout) -> logout.logoutSuccessHandler(myLogoutSuccessHandler)
+                .invalidateHttpSession(true)
+                .logoutSuccessUrl("/logout.html?logSucc=true")
+                .deleteCookies("JSESSIONID")
+                .permitAll())
+            .rememberMe((remember) -> remember.rememberMeServices(rememberMeServices()));
+
         return http.build();
     }
 
     // beans
+    @Bean
+    public SecurityExpressionHandler<FilterInvocation> customWebSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy());
+        return expressionHandler;
+    }
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
         final CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(encoder());
+        authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setPostAuthenticationChecks(differentLocationChecker());
         return authProvider;
     }
 
     @Bean
-    public PasswordEncoder encoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(11);
     }
 
@@ -148,9 +153,12 @@ public class SecSecurityConfig {
         return rememberMeServices;
     }
 
-    @Bean(name="GeoIPCountry")
+    @Bean(name = "GeoIPCountry")
     public DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
-        final File resource = new File(this.getClass().getClassLoader().getResource("maxmind/GeoLite2-Country.mmdb").getFile());
+        final File resource = new File(this.getClass()
+            .getClassLoader()
+            .getResource("maxmind/GeoLite2-Country.mmdb")
+            .getFile());
         return new DatabaseReader.Builder(resource).build();
     }
 
@@ -160,13 +168,6 @@ public class SecSecurityConfig {
         String hierarchy = "ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER";
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
-    }
-
-    @Bean
-    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
-        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
-        expressionHandler.setRoleHierarchy(roleHierarchy());
-        return expressionHandler;
     }
 
     @Bean

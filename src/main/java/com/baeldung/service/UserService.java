@@ -3,14 +3,14 @@ package com.baeldung.service;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.baeldung.persistence.dao.NewLocationTokenRepository;
 import com.baeldung.persistence.dao.PasswordResetTokenRepository;
@@ -93,7 +93,7 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
         user.setUsing2FA(accountDto.isUsing2FA());
-        user.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
+        user.setRoles(Collections.singletonList(roleRepository.findByName("ROLE_USER")));
         return userRepository.save(user);
     }
 
