@@ -82,21 +82,17 @@ public class SecSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .securityContext((securityContext) -> securityContext.requireExplicitSave(true))
             .authorizeHttpRequests(authz -> {
-                authz.requestMatchers("/**")
-                    .hasRole("USER")
-                    .requestMatchers("/admin/**")
-                    .hasRole("All")
-                    .requestMatchers(HttpMethod.GET, "/roleHierarchy")
+                authz.requestMatchers(HttpMethod.GET, "/roleHierarchy")
                     .hasRole("STAFF")
+                    .requestMatchers("/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin", "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*", "/badUser*", "/user/resendRegistrationToken*", "/forgetPassword*",
+                        "/user/resetPassword*", "/user/savePassword*", "/updatePassword*", "/user/changePassword*", "/emailError*", "/resources/**", "/old/user/registration*", "/successRegister*", "/qrcode*", "/user/enableNewLoc*")
+                    .permitAll()
                     .requestMatchers("/invalidSession*")
                     .anonymous()
                     .requestMatchers("/user/updatePassword*")
                     .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                     .requestMatchers("/console")
                     .hasAuthority("READ_PRIVILEGE")
-                    .requestMatchers("/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin", "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*", "/badUser*", "/user/resendRegistrationToken*", "/forgetPassword*",
-                        "/user/resetPassword*", "/user/savePassword*", "/updatePassword*", "/user/changePassword*", "/emailError*", "/resources/**", "/old/user/registration*", "/successRegister*", "/qrcode*", "/user/enableNewLoc*")
-                    .permitAll()
                     .anyRequest()
                     .hasAuthority("READ_PRIVILEGE");
             })
