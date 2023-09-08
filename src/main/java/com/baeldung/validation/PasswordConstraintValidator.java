@@ -2,8 +2,8 @@ package com.baeldung.validation;
 
 import java.util.Arrays;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.passay.AlphabeticalSequenceRule;
 import org.passay.DigitCharacterRule;

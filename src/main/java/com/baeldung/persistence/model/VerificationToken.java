@@ -3,7 +3,7 @@ package com.baeldung.persistence.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class VerificationToken {
